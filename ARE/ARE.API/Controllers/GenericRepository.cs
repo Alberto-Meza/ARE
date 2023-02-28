@@ -48,17 +48,55 @@ namespace ARE.API.Controllers
         [HttpPost]
         public virtual async Task<ActionResult> PostAsync(T entity)
         {
-            _context.Add(entity);
-            await _context.SaveChangesAsync();
-            return Ok(entity);
+            try
+            {
+                _context.Add(entity);
+                await _context.SaveChangesAsync();
+                return Ok(entity);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un registro con esa configuracón.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
         }
 
         [HttpPut]
         public virtual async Task<ActionResult> PutAsync(T entity)
         {
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
-            return Ok(entity);
+            try
+            {
+
+                _context.Update(entity);
+                await _context.SaveChangesAsync();
+                return Ok(entity);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un registro con esa configuracón.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
 
 

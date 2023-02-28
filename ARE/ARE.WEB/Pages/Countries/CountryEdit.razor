@@ -57,11 +57,8 @@ else
             await swal.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
             return;
         }
-        else
-        {
-            countryForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("countries");
-        }
+
+        Return();
     }
 
     private void Return()
