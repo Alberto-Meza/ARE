@@ -63,10 +63,12 @@ namespace ARE.API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }*/
+
         public CountriesController(DataContext context) : base(context)
         {
-            
         }
+
+       
     }
 }
 

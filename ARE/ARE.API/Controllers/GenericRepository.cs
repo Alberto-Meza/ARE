@@ -7,6 +7,7 @@ namespace ARE.API.Controllers
 {
     public class GenericRepository<T> : ControllerBase, IGenericRepository<T> where T : class,IEntity
     {
+
         private readonly DataContext _context;
         public GenericRepository(DataContext context)
         {
@@ -34,7 +35,7 @@ namespace ARE.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public virtual async Task<ActionResult> GetAsync(int id)
+        public virtual async Task<ActionResult> GetByIdAsync(int id)
         {
             var entity = await _context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)

@@ -6,7 +6,9 @@ namespace ARE.API.Controllers
 	{
         Task<ActionResult> GetAsync();
 
-        Task<ActionResult> GetAsync(int id);
+        //Task<ActionResult> GetAllAsync();
+
+        Task<ActionResult> GetByIdAsync(int id);
 
         Task<ActionResult> PostAsync(T model);
 
