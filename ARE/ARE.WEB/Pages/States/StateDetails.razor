@@ -57,7 +57,7 @@ else
 
     private async Task LoadAsync()
     {
-        var responseHttp = await repository.GetAsync<State>($"/api/states/{StateId}");
+        var responseHttp = await repository.GetAsync<State>($"/api/states/ByID/{StateId}");
         if (responseHttp.Error)
         {
             if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)

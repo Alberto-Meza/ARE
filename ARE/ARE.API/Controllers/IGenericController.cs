@@ -2,13 +2,13 @@
 
 namespace ARE.API.Controllers
 {
-	public interface IGenericRepository<T> where T : class
+	public interface IGenericController<T> where T : class
 	{
         Task<ActionResult> GetAsync();
 
         //Task<ActionResult> GetAllAsync();
 
-        Task<ActionResult> GetByIdAsync(int id);
+        Task<ActionResult> GetAsync(int id);
 
         Task<ActionResult> PostAsync(T model);
 

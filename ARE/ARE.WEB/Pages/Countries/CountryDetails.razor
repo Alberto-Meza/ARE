@@ -62,7 +62,9 @@ else
 
     private async Task LoadAsync()
     {
+
         var responseHttp = await repository.GetAsync<Country>($"/api/countries/{Id}");
+        //var responseHttp = await repository.GetAsync<Country>($"/api/states/ByCountryId{Id}");
         if (responseHttp.Error)
         {
             if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -75,6 +77,15 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
+        /*else
+        {
+            states = responseHttp.Response;
+            var res = states == null ? "Nullo" : states.Count().ToString();
+            await sweetAlertService.FireAsync("ErrorControlado", res , SweetAlertIcon.Error);
+
+
+        }*/
+
 
         country = responseHttp.Response;
         states = country!.States!.ToList();

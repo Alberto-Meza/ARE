@@ -18,7 +18,7 @@ namespace ARE.Shared.Entities
 
         [Display(Name = "Estados")]
         public int StatesNumber => States == null ? 0 : States.Count;
-
+        
     }
 }
 

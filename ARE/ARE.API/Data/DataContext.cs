@@ -9,10 +9,13 @@ namespace ARE.API.Data
         {
         }
 
+        public DbSet<BranchOffice> BranchOffices { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Country> Countries { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public DbSet<EmployeeType> EmployeeTypes { get; set; }
+        public DbSet<Job> Jobs { get; set; }
         public DbSet<State> States { get; set; }
 
 
@@ -20,15 +23,20 @@ namespace ARE.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<BranchOffice>().HasIndex("Name", "CityId").IsUnique();
             modelBuilder.Entity<City>().HasIndex("Name", "StateId").IsUnique();
             modelBuilder.Entity<Company>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Department>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<EmployeeType>().HasIndex(e => e.Name).IsUnique();
+            modelBuilder.Entity<Job>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex("Name", "CountryId").IsUnique();
 
-            modelBuilder.Entity<Country>().Navigation(c => c.States).AutoInclude();
 
-            modelBuilder.Entity<State>().Navigation(c => c.Cities).AutoInclude();
+            /*modelBuilder.Entity<Country>().Navigation(c => c.States).AutoInclude();
+            modelBuilder.Entity<State>().Navigation(c => c.Cities).AutoInclude();*/
+
+
         }
     }
 

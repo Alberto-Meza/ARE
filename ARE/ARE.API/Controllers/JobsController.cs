@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ARE.API.Controllers
 {
     [ApiController]
-    [Route("/api/cities")]
-    public class CitiesController : GenericController<City>
+    [Route("/api/jobs")]
+    public class JobsController : GenericController<Job>
     {
-		public CitiesController(DataContext context) : base(context)
+        public JobsController(DataContext context) : base(context)
         {
-		}
-	}
+        }
+    }
 }
 

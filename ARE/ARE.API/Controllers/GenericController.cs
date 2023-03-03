@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ARE.API.Controllers
 {
-    public class GenericRepository<T> : ControllerBase, IGenericRepository<T> where T : class,IEntity
+    public class GenericController<T> : ControllerBase, IGenericController<T> where T : class,IEntity
     {
 
         private readonly DataContext _context;
-        public GenericRepository(DataContext context)
+        public GenericController(DataContext context)
         {
             _context = context;
         }
@@ -35,7 +35,7 @@ namespace ARE.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public virtual async Task<ActionResult> GetByIdAsync(int id)
+        public virtual async Task<ActionResult> GetAsync(int id)
         {
             var entity = await _context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
@@ -99,6 +99,7 @@ namespace ARE.API.Controllers
                 return BadRequest(exception.Message);
             }
         }
+
 
 
         /*[HttpGet]

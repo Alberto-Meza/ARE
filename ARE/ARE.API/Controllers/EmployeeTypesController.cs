@@ -6,7 +6,7 @@ namespace ARE.API.Controllers
 {
     [ApiController]
     [Route("/api/employeeTypes")]
-    public class EmployeeTypesControllers : GenericRepository<EmployeeType>
+    public class EmployeeTypesControllers : GenericController<EmployeeType>
     {
         public EmployeeTypesControllers(DataContext context) : base(context)
         {

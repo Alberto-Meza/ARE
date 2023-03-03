@@ -7,6 +7,7 @@ namespace ARE.Shared.Entities
 	public class BranchOffice : IEntity
     {
         public int Id { get; set; }
+        public int CityId { get; set; }
 
         [Display(Name = "Sucursal")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -28,6 +29,11 @@ namespace ARE.Shared.Entities
         [MaxLength(50, ErrorMessage = "El campo {0} no puede tener mas de {1} caracteres")]
         public string Email { get; set; } = null!;
 
+        [Display(Name = "Colonia")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        [MaxLength(250, ErrorMessage = "El campo {0} no puede tener mas de {1} caracteres")]
+        public string Suburb { get; set; } = null!;
+
         [Display(Name = "Calle")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [MaxLength(250, ErrorMessage = "El campo {0} no puede tener mas de {1} caracteres")]
@@ -40,6 +46,9 @@ namespace ARE.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [MaxLength(5, ErrorMessage = "El campo {0} no puede tener mas de {1} caracteres")]
         public string ZipCode { get; set; } = null!;
+
+
+        public City? City { get; set; }
     }
 }
 
