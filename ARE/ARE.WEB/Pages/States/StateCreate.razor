@@ -18,7 +18,7 @@
     {
 
         state.CountryId = CountryId;
-        var httpResponse = await repository.PostAsync("/api/states", state);
+        var httpResponse = await repository.Post("/api/states", state);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();

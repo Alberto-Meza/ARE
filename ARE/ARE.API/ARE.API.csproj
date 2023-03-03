@@ -22,10 +22,12 @@
   <ItemGroup>
     <None Remove="Data\" />
     <None Remove="Controllers\" />
+    <None Remove="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARE.Shared\ARE.Shared.csproj">

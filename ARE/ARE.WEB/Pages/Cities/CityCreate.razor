@@ -17,7 +17,7 @@
     private async Task CreateAsync()
     {
         city.StateId = StateId;
-        var httpResponse = await repository.PostAsync("/api/cities", city);
+        var httpResponse = await repository.Post("/api/cities", city);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();

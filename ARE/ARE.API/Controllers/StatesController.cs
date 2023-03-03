@@ -1,5 +1,7 @@
 ﻿using System;
 using ARE.API.Data;
+using ARE.API.Helpers;
+using ARE.Shared.DTOs;
 using ARE.Shared.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,45 +18,49 @@ namespace ARE.API.Controllers
             _context = context;
 		}
 
-        /*public override async Task<ActionResult> GetAsync(int id)
+
+        [HttpGet("ByCountryId")]
+        public virtual async Task<ActionResult> GetByCountryId([FromQuery] PaginationDTO pagination)
         {
-            var entity = await _context.States
+
+            var queryable = _context.States
+                                    .Include(x => x.Cities)
+                                    .Where(x => x.CountryId == pagination.Id)
+                                    .AsQueryable();
+
+            return Ok(await queryable
+                .OrderBy(x => x.Name)
+                .Paginate(pagination)
+                .ToListAsync());
+
+
+
+
+            /*var entity =  _context.States
                                         .Include(x => x.Country)
                                         .Include(x => x.Cities)
-                                       .FirstOrDefaultAsync(x => x.Id == id);
+                                       .Where(x => x.CountryId == id).ToList();
             if (entity == null)
             {
                 return NotFound();
             }
 
-            return Ok(entity);
-        }*/
-
-        [HttpGet("ByID/{id:int}")]
-        public virtual async Task<ActionResult> GetAllAsync(int id)
-        {
-            var entity = await _context.States
-                                        .Include(x => x.Country)
-                                        .Include(x => x.Cities)
-                                       .FirstOrDefaultAsync(x => x.Id == id);
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(entity);
+            return Ok(entity);*/
         }
-        
-        /* public override async Task<ActionResult> GetAsync()
-         {
-             return Ok(await _context.States
-                                     .Include(x => x.Country)
-                                     .Include(x=>x.Cities)
-                                     .ToListAsync());
-         }
 
-         
-        */
+
+        [HttpGet("totalPages")]
+        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.States
+                .Where(x => x.Country!.Id == pagination.Id)
+                .AsQueryable();
+
+            double count = await queryable.CountAsync();
+            double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
+            return Ok(totalPages);
+        }
+
 
     }
 }

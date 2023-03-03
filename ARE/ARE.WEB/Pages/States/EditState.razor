@@ -24,7 +24,7 @@ else
 
         protected override async Task OnInitializedAsync()
         {
-            var responseHttp = await repository.GetAsync<State>($"/api/states/{StateId}");
+            var responseHttp = await repository.Get<State>($"/api/states/{StateId}");
             if (responseHttp.Error)
             {
                 if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -44,7 +44,7 @@ else
 
         private async Task EditAsync()
         {
-            var responseHttp = await repository.PutAsync("/api/states", state);
+            var responseHttp = await repository.Put("/api/states", state);
             if (responseHttp.Error)
             {
                 var message = await responseHttp.GetErrorMessageAsync();
