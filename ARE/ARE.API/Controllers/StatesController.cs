@@ -20,43 +20,34 @@ namespace ARE.API.Controllers
 
 
         [HttpGet("ByCountryId")]
-        public virtual async Task<ActionResult> GetByCountryId([FromQuery] PaginationDTO pagination)
+        public virtual ActionResult GetByCountryId([FromQuery] PaginationDTO pagination)
         {
 
             var queryable = _context.States
                                     .Include(x => x.Cities)
+                                    .Include(x => x.Country)
                                     .Where(x => x.CountryId == pagination.Id)
                                     .AsQueryable();
+        
 
-            return Ok(await queryable
+
+            return Ok( queryable.ContaintAll(pagination,new State())
                 .OrderBy(x => x.Name)
                 .Paginate(pagination)
-                .ToListAsync());
+                .ToList());
 
 
-
-
-            /*var entity =  _context.States
-                                        .Include(x => x.Country)
-                                        .Include(x => x.Cities)
-                                       .Where(x => x.CountryId == id).ToList();
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(entity);*/
         }
 
 
         [HttpGet("totalPages")]
-        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        public ActionResult GetPages([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.States
                 .Where(x => x.Country!.Id == pagination.Id)
                 .AsQueryable();
 
-            double count = await queryable.CountAsync();
+            double count =  queryable.ContaintAll(pagination, new State()).Count();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }

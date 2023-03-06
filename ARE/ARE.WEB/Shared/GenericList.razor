@@ -3,30 +3,32 @@
 @if (MyList is null)
 {
     @if (Loading is null)
-    {
+        {
         <div class="align-items-center">
             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921" />
         </div>
-    }
-    else
-    {
+        }
+        else
+        {
         @Loading
-    }
+        }
 }
 else if (MyList.Count == 0)
 {
     @if (NoRecords is null)
-    {
+        {
         <p>No hay registros para mostrar...</p>
-    }
-    else
-    {
+        }
+        else
+        {
         @NoRecords
-    }
+        }
 }
 else
 {
     @Body
+
+    <Pagination CurrentPage=currentPage TotalPages=totalPages SelectedPage=SelectedPage/>
 }
 
 
@@ -44,4 +46,16 @@ else
     [Parameter]
     [EditorRequired]
     public List<Titem> MyList { get; set; } = null!;
-}
+
+    [Parameter]
+    public int currentPage { get; set; } = 1;
+
+    [Parameter]
+    public int totalPages { get; set; } = 1;
+
+    [Parameter]
+    public EventCallback<int> SelectedPage { get; set; }
+
+    
+
+    }
