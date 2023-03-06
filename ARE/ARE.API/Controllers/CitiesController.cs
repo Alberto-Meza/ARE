@@ -23,6 +23,7 @@ namespace ARE.API.Controllers
         {
 
             var queryable = _context.Cities
+                                    .Include(x=>x.State)
                                     .Where(x => x.StateId == pagination.Id)
                                     .AsQueryable();
 
@@ -40,7 +41,7 @@ namespace ARE.API.Controllers
                 .Where(x => x.StateId == pagination.Id)
                 .AsQueryable();
 
-            double count = queryable.ContaintAll(pagination, new State()).Count();
+            double count = queryable.ContaintAll(pagination, new City()).Count();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }
