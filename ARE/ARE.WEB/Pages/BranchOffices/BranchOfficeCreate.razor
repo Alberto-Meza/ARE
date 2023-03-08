@@ -1,0 +1,35 @@
+﻿@page "/branchOffices/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Crear Sucursal</h3>
+
+<BranchOfficeForm @ref="branchOfficeForm" BranchOffice="branchOffice" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+
+
+@code {
+    private BranchOffice branchOffice = new BranchOffice();
+    private BranchOfficeForm? branchOfficeForm;
+
+    private async Task CreateAsync()
+    {
+        var httpResponse = await repository.Post("/api/branchOffices", branchOffice);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Return();
+    }
+
+    private void Return()
+    {
+        branchOfficeForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/branchOffices");
+    }
+}
+

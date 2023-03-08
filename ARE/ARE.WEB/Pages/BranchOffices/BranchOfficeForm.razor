@@ -1,0 +1,261 @@
+﻿@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="col-6">
+        <div class="mb-3">
+            <label>País:</label>
+            <div>
+                <select class="form-select" @onchange="CountryChangedAsync">
+                    @if (countries is not null)
+                    {
+                        @foreach (var country in countries)
+                        {
+                            <option value="@country.Value">@country.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Estado:</label>
+            <div>
+                <select class="form-select" @onchange="StateChangedAsync">
+                    @if (states is not null)
+                    {
+                        @foreach (var item in states)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Ciudad:</label>
+            <div>
+                <select class="form-select" @onchange="CityChangedAsync" >
+                    @if (cities is not null)
+                    {
+                        @foreach (var item in cities)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-6">
+        <div class="mb-3">
+            <label>Nombre:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@BranchOffice.Name" />
+                <ValidationMessage For="@(() => BranchOffice.Name)" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Contacto:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@BranchOffice.Contact" />
+                <ValidationMessage For="@(() => BranchOffice.Contact)" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Telefono:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@BranchOffice.Phone" />
+                <ValidationMessage For="@(() => BranchOffice.Phone)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="mb-3">
+            <label>Correo:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@BranchOffice.Email" />
+                <ValidationMessage For="@(() => BranchOffice.Email)" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Colonia:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@BranchOffice.Suburb" />
+                <ValidationMessage For="@(() => BranchOffice.Suburb)" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Calle:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@BranchOffice.Street" />
+                <ValidationMessage For="@(() => BranchOffice.Street)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="mb-3">
+            <label>Nro:</label>
+            <div>
+                <InputNumber class="form-control" @bind-Value="@BranchOffice.Number" />
+                <ValidationMessage For="@(() => BranchOffice.Number)" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Codigo Postal:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@BranchOffice.ZipCode" />
+                <ValidationMessage For="@(() => BranchOffice.ZipCode)" />
+            </div>
+        </div>
+    </div>
+
+
+    <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+    private List<ItemCombo>? countries;
+    private List<ItemCombo>? states;
+    private List<ItemCombo>? cities;
+    private List<FilterDTO> filters;
+
+
+    [Parameter]
+    [EditorRequired]
+    public BranchOffice BranchOffice { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new(BranchOffice);
+        await InitCombos();
+    }
+
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasMofied = editContext.IsModified();
+        if (!formWasMofied || FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+        {
+            Title = "Confirmación",
+            Text = "¿Deseas abandonar la página y perder los cambios?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            CancelButtonText = "No",
+            ConfirmButtonText = "Si"
+        });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+
+
+    private async Task InitCombos() {
+        await LoadCountriesAsync();
+        await LoadStatesAsyn("0");
+        await LoadCitiesAsyn("0");
+    }
+
+    private async Task LoadCountriesAsync()
+    {
+        //loading = true;
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=Pais");
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        countries = responseHttp.Response;
+        //loading = false;
+    }
+    private async Task CountryChangedAsync(ChangeEventArgs e)
+    {
+        var selectedCountry = (string)e.Value!;
+        await LoadStatesAsyn(selectedCountry);
+    }
+
+    private async Task LoadStatesAsyn(string CountryId)
+    {
+        //loading = true;
+        filters = new List<FilterDTO>();
+        filters.Add(new FilterDTO() { Campo = "CountryId", Valor = CountryId, Operator = OperatorType.Igual  });
+        var responseHttp = await repository.Post< List<FilterDTO>,List <ItemCombo>>("/api/utils/GetComboByFilter?name=State", filters);
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        states = responseHttp.Response;
+        //loading = false;
+    }
+    private async Task StateChangedAsync(ChangeEventArgs e)
+    {
+        var selectedState = (string)e.Value!;
+        await LoadCitiesAsyn(selectedState);
+    }
+
+    private async Task LoadCitiesAsyn(string StateId)
+    {
+        //loading = true;
+        filters = new List<FilterDTO>();
+        filters.Add(new FilterDTO() { Campo = "StateId", Valor = StateId, Operator = OperatorType.Igual });
+        var responseHttp = await repository.Post<List<FilterDTO>, List<ItemCombo>>("/api/utils/GetComboByFilter?name=City", filters);
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        cities = responseHttp.Response;
+        //loading = false;
+    }
+    private void CityChangedAsync(ChangeEventArgs e)
+    {
+        BranchOffice.CityId = (int)e.Value!;
+    }
+
+}
+

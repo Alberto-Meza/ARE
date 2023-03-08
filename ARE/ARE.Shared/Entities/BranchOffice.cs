@@ -7,6 +7,8 @@ namespace ARE.Shared.Entities
 	public class BranchOffice : IEntity
     {
         public int Id { get; set; }
+
+        [Range(1,int.MaxValue,ErrorMessage = "Debe Seleccionar una ciudad")]
         public int CityId { get; set; }
 
         [Display(Name = "Sucursal")]

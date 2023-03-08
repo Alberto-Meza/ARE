@@ -85,8 +85,8 @@ else
             page = Convert.ToInt32(Page);
         }
 
-        string url1 = $"api/cities/ByStateId?id={StateId}&page={page}&filter={Filter}&RecordsNumber=1";
-        string url2 = $"api/cities/totalPages?id={StateId}&filter={Filter}&RecordsNumber=1";
+        string url1 = $"api/cities/ByStateId?id={StateId}&page={page}&filter={Filter}";
+        string url2 = $"api/cities/totalPages?id={StateId}&filter={Filter}";
         var responseHppt = await repository.Get<State>($"api/states/{StateId}");
         var responseHppt2 = await repository.Get<List<City>>(url1);
         var responseHppt3 = await repository.Get<int>(url2);

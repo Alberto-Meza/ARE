@@ -1,4 +1,6 @@
 ﻿using ARE.API.Data;
+using ARE.API.Helpers;
+using ARE.Shared.DTOs;
 using ARE.Shared.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +9,6 @@ namespace ARE.API.Controllers
 {
     public class GenericController<T> : ControllerBase, IGenericController<T> where T : class,IEntity
     {
-
         private readonly DataContext _context;
         public GenericController(DataContext context)
         {
@@ -108,6 +109,7 @@ namespace ARE.API.Controllers
             return Ok(_context.Set<T>().AsNoTracking().Where(predicate).ToList());
         }*/
 
+       
 
 
     }
