@@ -9,6 +9,8 @@ namespace ARE.API.Data
         {
         }
 
+        public DbSet<Assistance> Assistances { get; set; }
+        public DbSet<BloodType> BloodTypes { get; set; }
         public DbSet<BranchOffice> BranchOffices { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Company> Companies { get; set; }
@@ -18,15 +20,22 @@ namespace ARE.API.Data
         public DbSet<EmployeeType> EmployeeTypes { get; set; }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<PaymentPeriod> PaymentPeriods { get; set; }
+        public DbSet<SchoolGrade> SchoolGrades { get; set; }
         public DbSet<Shift> Shifts { get; set; }
         public DbSet<State> States { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<StudentType> StudentTypes { get; set; }
+        public DbSet<StudentTypeRelationship> StudentTypeRelationships { get; set; }
         public DbSet<TableDescription> TableDescriptions { get; set; }
+        public DbSet<TypeOfCharge> TypeOfCharges { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Assistance>().HasIndex("EntryDate","StudentId").IsUnique();
+            modelBuilder.Entity<BloodType>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<BranchOffice>().HasIndex("Name", "CityId").IsUnique();
             modelBuilder.Entity<City>().HasIndex("Name", "StateId").IsUnique();
             modelBuilder.Entity<Company>().HasIndex(c => c.Name).IsUnique();
@@ -36,9 +45,14 @@ namespace ARE.API.Data
             modelBuilder.Entity<EmployeeType>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<Job>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<PaymentPeriod>().HasIndex(e => e.Name).IsUnique();
+            modelBuilder.Entity<SchoolGrade>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<Shift>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex("Name", "CountryId").IsUnique();
+            modelBuilder.Entity<Student>().HasIndex(e => e.Name).IsUnique();
+            modelBuilder.Entity<StudentType>().HasIndex(e => e.Name).IsUnique();
+            modelBuilder.Entity<StudentTypeRelationship>().HasIndex(e => e.StudentId).IsUnique();
             modelBuilder.Entity<TableDescription>().HasIndex(e => e.Name).IsUnique();
+            modelBuilder.Entity<TypeOfCharge>().HasIndex(e => e.Name).IsUnique();
 
             /*modelBuilder.Entity<Country>().Navigation(c => c.States).AutoInclude();
             modelBuilder.Entity<State>().Navigation(c => c.Cities).AutoInclude();*/

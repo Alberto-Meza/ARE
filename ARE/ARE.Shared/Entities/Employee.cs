@@ -55,6 +55,20 @@ namespace ARE.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string PhoneNumber { get; set; } = null!;
 
+        [Display(Name = "Foto")]
+        [MaxLength(500, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public string PhotoPath { get; set; } = null!;
+
+        [Display(Name = "Huella1")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public byte[] FingertPrint1 { get; set; } = null!;
+
+        [Display(Name = "Huella2")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public byte[] FingertPrint2 { get; set; } = null!;
+
+
         [Display(Name = "Activo")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public bool IsActive { get; set; }
