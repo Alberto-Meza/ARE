@@ -25,7 +25,7 @@
         <div class="mb-3">
             <label>Estado:</label>
             <div>
-                <select class="form-select" @onchange="StateChangedAsync">
+                <select class="form-select" @onchange="StateChangedAsync" >
                     @if (states is not null)
                     {
                         @foreach (var item in states)
@@ -40,7 +40,7 @@
         <div class="mb-3">
             <label>Ciudad:</label>
             <div>
-                <select class="form-select" @onchange="CityChangedAsync" >
+                <select class="form-select"  @bind="BranchOffice.CityId" >
                     @if (cities is not null)
                     {
                         @foreach (var item in cities)
@@ -139,7 +139,7 @@
 
     [Parameter]
     [EditorRequired]
-    public BranchOffice BranchOffice { get; set; } = null!;
+    public BranchOffice BranchOffice { get; set; } = new BranchOffice();
 
     [Parameter]
     [EditorRequired]
@@ -252,10 +252,7 @@
         cities = responseHttp.Response;
         //loading = false;
     }
-    private void CityChangedAsync(ChangeEventArgs e)
-    {
-        BranchOffice.CityId = (int)e.Value!;
-    }
+    
 
 }
 
