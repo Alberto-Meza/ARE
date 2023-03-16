@@ -3,12 +3,15 @@ using ARE.API.Data;
 using ARE.API.Helpers;
 using ARE.Shared.DTOs;
 using ARE.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ARE.API.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/countries")]
     public class CountriesController : GenericController<Country>
     {
