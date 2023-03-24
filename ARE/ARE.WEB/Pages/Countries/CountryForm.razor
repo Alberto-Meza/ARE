@@ -4,21 +4,51 @@
 
 <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-    <div class="mb-3">
-        <label>País:</label>
-        <div>
-            <InputText class="form-control" @bind-Value="@Country.Name" />
-            <ValidationMessage For="@(() => Country.Name)" />
+
+
+    <div class="card">
+        <div class="card-header">
+            <span>
+
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <i class="oi oi-globe"></i> @Title
+                    </div>
+                    
+                    <div class="col-3">
+                        <button class="btn btn-sm float-end" @onclick="ReturnAction"><i class="oi oi-x"></i></button>
+                    </div>
+                </div>
+
+            </span>
+        </div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label>País:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@Country.Name" />
+                    <ValidationMessage For="@(() => Country.Name)" />
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+            <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
         </div>
     </div>
 
-    <button class="btn btn-primary" type="submit">Guardar Cambios</button>
-    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+    
 </EditForm>
+
 
 @code {
 
     #region Properties
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
     public EditContext editContext = null!;
 
     [EditorRequired]

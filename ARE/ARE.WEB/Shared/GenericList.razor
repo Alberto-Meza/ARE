@@ -3,36 +3,88 @@
 @if (MyList is null)
 {
     @if (Loading is null)
-        {
-        <div class="align-items-center">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921" />
-        </div>
-        }
-        else
-        {
+    {
+        <div class="spinner" />
+    }
+    else
+    {
         @Loading
-        }
-}
-else if (MyList.Count == 0)
-{
-    @if (NoRecords is null)
-        {
-        <p>No hay registros para mostrar...</p>
-        }
-        else
-        {
-        @NoRecords
-        }
+    }
 }
 else
 {
-    @Body
+    <div class="card">
+        <div class="card-header">
+            <span>
 
-    <Pagination CurrentPage=currentPage TotalPages=totalPages SelectedPage=SelectedPage/>
+                <div class="row align-items-center">
+                    <div class="col-2">
+                        @if (BtnBackPage is not null)
+                        {
+                            @BtnBackPage
+                        }
+                        <i class=@IconTitle></i> @TitleCatalogo
+                    </div>
+                    <div class="col-8">
+                        <FilterHeader Filter=@Filter ApplyFilterAsync=ApplyFilterAsync CleanFilterAsync=CleanFilterAsync />
+                    </div>
+                    <div class="col-2">
+                       
+                        <button class="btn btn-sm btn-primary float-end" @onclick=@(() => Add())><i class="oi oi-plus"></i> Agreagar </button>
+                    </div>
+                </div>
+
+            </span>
+        </div>
+        <div class="card-body">
+
+            @if (MyList.Count == 0)
+            {
+                <p>No hay registros para mostrar...</p>
+            }
+            else
+            {
+                @Body
+            }
+
+        </div>
+        <div class="card-footer">
+            <Pagination CurrentPage=currentPage TotalPages=totalPages SelectedPage=SelectedPage />
+        </div>
+    </div>
+
+    @if (ShowPopUp)
+    {
+
+            <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);"
+                 aria-modal="true" role="dialog">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        
+                        <div class="modal-body">
+
+                            @PopUpAddEdit
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+    }
+
 }
 
 
 @code {
+
+
+    [Parameter] public bool ShowPopUp { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment? PopUpAddEdit { get; set; }
+
+    [Parameter]
+    public RenderFragment? BtnBackPage { get; set; }
+
     [Parameter]
     public RenderFragment? Loading { get; set; }
 
@@ -56,6 +108,28 @@ else
     [Parameter]
     public EventCallback<int> SelectedPage { get; set; }
 
-    
+    [Parameter]
+    public EventCallback<string> ApplyFilterAsync { get; set; }
 
+    [Parameter]
+    public EventCallback CleanFilterAsync { get; set; }
+
+    [Parameter]
+    public string Filter { get; set; } = string.Empty;
+
+    [Parameter]
+    public string TitleCatalogo { get; set; } = string.Empty;
+
+    [Parameter]
+    public string IconTitle { get; set; } = string.Empty;
+
+
+    [Parameter]
+    public EventCallback AddAsync { get; set; }
+
+    private async void Add()
+    {
+        await AddAsync.InvokeAsync();
     }
+
+}

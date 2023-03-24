@@ -18,6 +18,23 @@ namespace ARE.API.Controllers
             _context = context;
         }
 
+        public override async Task<ActionResult> GetAsync(int id)
+        {
+
+            var entity = await _context.BranchOffices
+                                    .Include(x => x.City)
+                                    .ThenInclude(x=>x.State!)
+                                    .ThenInclude(x=>x.Country!)
+                                    .FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(entity);
+
+        }
+
         [HttpGet("GetAll")]
         public virtual async Task<ActionResult> GetAllAsync([FromQuery] PaginationDTO pagination)
         {

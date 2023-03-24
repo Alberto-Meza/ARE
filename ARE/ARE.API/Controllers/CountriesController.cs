@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ARE.API.Controllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/countries")]
     public class CountriesController : GenericController<Country>
     {
@@ -24,27 +24,26 @@ namespace ARE.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        public virtual async Task<ActionResult> GetAllAsync([FromQuery] PaginationDTO pagination)
+        public virtual ActionResult GetAllAsync([FromQuery] PaginationDTO pagination)
         {
 
             var queryable = _context.Countries
                                     .Include(x => x.States)
                                     .AsQueryable();
-
-
-            return Ok(await queryable.ContaintAll(pagination, new Country())
+            
+            return Ok( queryable.ContaintAll(pagination, new Country())
                 .OrderBy(x => x.Name)
                 .Paginate(pagination)
-                .ToListAsync());
+                .ToList());
 
         }
 
         [HttpGet("totalPages")]
-        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        public ActionResult GetPages([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Countries.AsQueryable();
 
-            double count = await queryable.ContaintAll(pagination, new Country()).CountAsync();
+            double count = queryable.ContaintAll(pagination, new Country()).ToList().Count();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }

@@ -2,65 +2,76 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-
-@if (state is null)
-{
-    <p>Cargando...</p>
-}
-else
-{
-    <h3>@state.Name</h3>
+@using ARE.WEB.Pages.Cities
 
 
-    <div class="mb-2">
-        <a class="btn btn-primary" href="/cities/create/@state.Id">Nueva Ciuadad</a>
-        <a class="btn btn-success" href="/countries/details/@state.CountryId">Regresar</a>
-    </div>
 
-    <div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
+<GenericList ShowPopUp="ShowPopUp"
+             TitleCatalogo="Ciudades"
+             IconTitle="oi oi-globe"
+             MyList="cities"
+             Filter=@Filter
+             currentPage="currentPage"
+             totalPages="totalPages"
+             SelectedPage="SelectedPage"
+             ApplyFilterAsync="ApplyFilterAsync"
+             CleanFilterAsync="CleanFilterAsync"
+             AddAsync="Add">
 
-        <div class="mx-2">
-            <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar país..." @bind-value="Filter" />
-        </div>
-        <div>
-            <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filtrar</button>
-            <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
-        </div>
-    </div>
+    <BtnBackPage>
+        <a class="btn" href="/countries/details/@CountryId"><i class="oi oi-arrow-thick-left" /> </a>
+    </BtnBackPage>
 
-    <GenericList MyList="cities" currentPage="currentPage" totalPages="totalPages" SelectedPage="SelectedPage">
-        <Body>
-            <table class="table table-striped">
-                <thead>
+
+    <Body>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Ciudad</th>
+                    <th style="width:180px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var city in cities!)
+                {
                     <tr>
-                        <th>Ciudad</th>
-                        <th style="width:180px"></th>
+                        <td>
+                            @city.Name
+                        </td>
+                        <td>
+                            <button class="btn btn-warning" @onclick=@(() => EditAsync(city.Id))> <i class="oi oi-pencil" /> </button>
+                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(city.Id))> <i class="oi oi-trash" /> </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var city in cities!)
-                    {
-                        <tr>
-                            <td>
-                                @city.Name
-                            </td>
-                            <td>
-                                <a class="btn btn-warning" href="/cities/edit/@city.Id">Editar</a>
-                                <button class="btn btn-danger" @onclick=@(() => DeleteAsync(city.Id))>Borrar</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </Body>
-    </GenericList>
-}
+                }
+            </tbody>
+        </table>
+
+
+    </Body>
+
+    <PopUpAddEdit>
+
+        <CityForm @ref="cityForm" Title="@TitlePopUp" City="city" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
+
+    </PopUpAddEdit>
+</GenericList>
+
+
 
 @code {
     private State? state;
     private List<City>? cities;
     private int currentPage = 1;
     private int totalPages;
+    private bool ShowPopUp = false;
+    public string TitlePopUp = null!;
+    public int CountryId { get; set; }
+
+    private City city = new();
+    private CityForm? cityForm;
+
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -94,6 +105,79 @@ else
         cities = responseHppt2.Response;
         totalPages = responseHppt3.Response;
 
+        CountryId = state.CountryId!;
+    }
+
+    private void Add()
+    {
+        TitlePopUp = "Agregar Ciudad";
+        city = new();
+        ShowPopUp = true;
+    }
+
+    private async Task EditAsync(int CityId)
+    {
+        TitlePopUp = "Modificar Ciudad";
+
+
+        var responseHttp = await repository.Get<City>($"/api/cities/{CityId}");
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/countries");
+                return;
+            }
+
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        else
+        {
+            city = responseHttp.Response;
+            ShowPopUp = true;
+        }
+
+    }
+
+
+    private async Task OnValidSubmit()
+    {
+
+        if (city?.Id > 0)
+            await Edit();
+        else
+            await Create();
+
+    }
+
+    private async Task Create()
+    {
+        city.StateId = StateId;
+        var httpResponse = await repository.Post("/api/cities", city);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await Return();
+    }
+
+    private async Task Edit()
+    {
+        var responseHttp = await repository.Put("/api/cities", city);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+
+        await Return();
     }
 
     private async Task DeleteAsync(int cityId)
@@ -128,6 +212,13 @@ else
         await LoadAsync();
     }
 
+    private async Task Return()
+    {
+        await LoadAsync();
+        ShowPopUp = false;
+    }
+
+
     #region DataGrid
 
     private async Task SelectedPage(int page)
@@ -139,13 +230,13 @@ else
     private async Task CleanFilterAsync()
     {
         Filter = string.Empty;
-        await ApplyFilterAsync();
+        await ApplyFilterAsync("");
     }
 
-    private async Task ApplyFilterAsync()
+    private async Task ApplyFilterAsync(string filter)
     {
+        Filter = filter;
         int page = 1;
-        await LoadAsync(page);
         await SelectedPage(page);
     }
     #endregion

@@ -6,127 +6,202 @@
 
 <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-    <div class="col-6">
-        <div class="mb-3">
-            <label>País:</label>
-            <div>
-                <select class="form-select" @onchange="CountryChangedAsync">
-                    @if (countries is not null)
-                    {
-                        @foreach (var country in countries)
-                        {
-                            <option value="@country.Value">@country.Text</option>
-                        }
-                    }
-                </select>
-            </div>
-        </div>
 
-        <div class="mb-3">
-            <label>Estado:</label>
-            <div>
-                <select class="form-select" @onchange="StateChangedAsync" >
-                    @if (states is not null)
-                    {
-                        @foreach (var item in states)
-                        {
-                            <option value="@item.Value">@item.Text</option>
-                        }
-                    }
-                </select>
-            </div>
-        </div>
 
-        <div class="mb-3">
-            <label>Ciudad:</label>
-            <div>
-                <select class="form-select"  @bind="BranchOffice.CityId" >
-                    @if (cities is not null)
-                    {
-                        @foreach (var item in cities)
-                        {
-                            <option value="@item.Value">@item.Text</option>
-                        }
-                    }
-                </select>
-            </div>
-        </div>
+    <div class="card">
+        <div class="card-header">
+            <span>
 
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <i class="oi oi-globe"></i> @Title
+                    </div>
+
+                    <div class="col-3">
+                        <button class="btn btn-sm float-end" type="button" @onclick="ReturnAction"><i class="oi oi-x"></i></button>
+                    </div>
+                </div>
+
+            </span>
+        </div>
+        <div class="card-body">
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                </div>
+                <div class="col-6">
+                </div>
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>País:</label>
+                        <div>
+                            <select class="form-select" @onchange="CountryChangedAsync">
+                                @if (countries is not null)
+                                {
+                                    @foreach (var country in countries)
+                                    {
+                                        if (@country.Value == CountrySelected)
+                                        {
+                                            <option selected value="@country.Value">@country.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@country.Value">@country.Text</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Estado:</label>
+                        <div>
+                            <select class="form-select" @onchange="StateChangedAsync">
+                                @if (states is not null)
+                                {
+                                    @foreach (var item in states)
+                                    {
+                                        if (@item.Value == CountrySelected)
+                                        {
+                                            <option selected value="@item.Value">@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Ciudad:</label>
+                        <div>
+                            <select class="form-select" @bind="BranchOffice.CityId">
+                                @if (cities is not null)
+                                {
+                                    @foreach (var item in cities)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Nombre:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@BranchOffice.Name" />
+                            <ValidationMessage For="@(() => BranchOffice.Name)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Contacto:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@BranchOffice.Contact" />
+                            <ValidationMessage For="@(() => BranchOffice.Contact)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Telefono:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@BranchOffice.Phone" />
+                            <ValidationMessage For="@(() => BranchOffice.Phone)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Correo:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@BranchOffice.Email" />
+                            <ValidationMessage For="@(() => BranchOffice.Email)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Colonia:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@BranchOffice.Suburb" />
+                            <ValidationMessage For="@(() => BranchOffice.Suburb)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Calle:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@BranchOffice.Street" />
+                            <ValidationMessage For="@(() => BranchOffice.Street)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Nro:</label>
+                        <div>
+                            <InputNumber class="form-control" @bind-Value="@BranchOffice.Number" />
+                            <ValidationMessage For="@(() => BranchOffice.Number)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Codigo Postal:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@BranchOffice.ZipCode" />
+                            <ValidationMessage For="@(() => BranchOffice.ZipCode)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                </div>
+            </div>
+
+            
+
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+            <button class="btn btn-success" type="button" @onclick="ReturnAction">Regresar</button>
+        </div>
     </div>
 
-    <div class="col-6">
-        <div class="mb-3">
-            <label>Nombre:</label>
-            <div>
-                <InputText class="form-control" @bind-Value="@BranchOffice.Name" />
-                <ValidationMessage For="@(() => BranchOffice.Name)" />
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Contacto:</label>
-            <div>
-                <InputText class="form-control" @bind-Value="@BranchOffice.Contact" />
-                <ValidationMessage For="@(() => BranchOffice.Contact)" />
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Telefono:</label>
-            <div>
-                <InputText class="form-control" @bind-Value="@BranchOffice.Phone" />
-                <ValidationMessage For="@(() => BranchOffice.Phone)" />
-            </div>
-        </div>
-    </div>
-
-    <div class="col-6">
-        <div class="mb-3">
-            <label>Correo:</label>
-            <div>
-                <InputText class="form-control" @bind-Value="@BranchOffice.Email" />
-                <ValidationMessage For="@(() => BranchOffice.Email)" />
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Colonia:</label>
-            <div>
-                <InputText class="form-control" @bind-Value="@BranchOffice.Suburb" />
-                <ValidationMessage For="@(() => BranchOffice.Suburb)" />
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Calle:</label>
-            <div>
-                <InputText class="form-control" @bind-Value="@BranchOffice.Street" />
-                <ValidationMessage For="@(() => BranchOffice.Street)" />
-            </div>
-        </div>
-    </div>
-
-    <div class="col-6">
-        <div class="mb-3">
-            <label>Nro:</label>
-            <div>
-                <InputNumber class="form-control" @bind-Value="@BranchOffice.Number" />
-                <ValidationMessage For="@(() => BranchOffice.Number)" />
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Codigo Postal:</label>
-            <div>
-                <InputText class="form-control" @bind-Value="@BranchOffice.ZipCode" />
-                <ValidationMessage For="@(() => BranchOffice.ZipCode)" />
-            </div>
-        </div>
-    </div>
-
-
-    <button class="btn btn-primary" type="submit">Guardar Cambios</button>
-    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
 </EditForm>
 
 @code {
@@ -135,7 +210,12 @@
     private List<ItemCombo>? states;
     private List<ItemCombo>? cities;
     private List<FilterDTO> filters;
+    private string CountrySelected;
+    private string StateSelected;
 
+
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
 
     [Parameter]
     [EditorRequired]
@@ -154,6 +234,16 @@
     protected override async Task OnInitializedAsync()
     {
         editContext = new(BranchOffice);
+
+        if (BranchOffice.Id > 0)
+        {
+            CountrySelected = BranchOffice.City.State.CountryId.ToString();
+            StateSelected = BranchOffice.City.StateId.ToString();
+        }
+        else {
+            CountrySelected = "0";
+            StateSelected = "";
+        }
         await InitCombos();
     }
 
@@ -187,8 +277,8 @@
 
     private async Task InitCombos() {
         await LoadCountriesAsync();
-        await LoadStatesAsyn("0");
-        await LoadCitiesAsyn("0");
+        await LoadStatesAsyn(CountrySelected);
+        await LoadCitiesAsyn(StateSelected);
     }
 
     private async Task LoadCountriesAsync()
@@ -208,8 +298,8 @@
     }
     private async Task CountryChangedAsync(ChangeEventArgs e)
     {
-        var selectedCountry = (string)e.Value!;
-        await LoadStatesAsyn(selectedCountry);
+        CountrySelected = (string)e.Value!;
+        await LoadStatesAsyn(CountrySelected);
     }
 
     private async Task LoadStatesAsyn(string CountryId)
@@ -252,7 +342,7 @@
         cities = responseHttp.Response;
         //loading = false;
     }
-    
 
-}
+
+    }
 

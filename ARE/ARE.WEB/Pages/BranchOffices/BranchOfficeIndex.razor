@@ -2,32 +2,34 @@
 @inject IRepository repository
 @inject SweetAlertService Alert
 @inject NavigationManager navigationManager
+@inject IJSRuntime JS
 
-<h3>Sucursales</h3>
 
-<div>
-    <a class="btn btn-primary" href="/branchOffices/create">Nueva Sucursal</a>
-</div>
 
-<div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
 
-    <div class="mx-2">
-        <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar país..." @bind-value="Filter" />
-    </div>
-    <div>
-        <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filtrar</button>
-        <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
-    </div>
-</div>
+<GenericList ShowPopUp="ShowPopUp"
+             TitleCatalogo="Sucursales"
+             IconTitle="oi oi-box"
+             MyList="BranchOffices"
+             Filter=@Filter
+             currentPage="currentPage"
+             totalPages="totalPages"
+             SelectedPage="SelectedPage"
+             ApplyFilterAsync="ApplyFilterAsync"
+             CleanFilterAsync="CleanFilterAsync"
+             AddAsync="Add">
 
-<GenericList MyList="BranchOffices" currentPage="currentPage" totalPages="totalPages" SelectedPage="SelectedPage">
+
 
     <Body>
+
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>País</th>
-                    <th style="width:220px">Estados</th>
+                    <th>Ciudad</th>
+                    <th>Sucursal</th>
+                    <th>Contacto</th>
+                    <th>Telefono</th>
                     <th style="width:260px"></th>
 
                 </tr>
@@ -37,15 +39,20 @@
                 {
                     <tr>
                         <td>
+                            @country.City?.Name
+                        </td>
+                        <td>
                             @country.Name
                         </td>
                         <td>
                             @country.Contact
                         </td>
                         <td>
-                            <a class="btn btn-info" href="/countries/details/@country.Id">Detalles</a>
-                            <a class="btn btn-warning" href="/countries/edit/@country.Id">Editar</a>
-                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(country.Id))>Borrar</button>
+                            @country.Phone
+                        </td>
+                        <td>
+                            <button class="btn btn-warning" @onclick=@(() => EditAsync(country.Id))> <i class="oi oi-pencil" /> </button>
+                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(country.Id))> <i class="oi oi-trash" /> </button>
                         </td>
                     </tr>
 
@@ -53,114 +60,183 @@
             </tbody>
         </table>
 
+
     </Body>
+
+    <PopUpAddEdit>
+
+        <BranchOfficeForm @ref="branchOfficeForm" Title="@TitlePopUp" BranchOffice="branchOffice" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
+       
+    </PopUpAddEdit>
 </GenericList>
+
 
 
 @code {
     public List<BranchOffice>? BranchOffices { get; set; }
-    private int currentPage = 1;
-    private int totalPages;
+        private int currentPage = 1;
+        private int totalPages;
+        private bool ShowPopUp = false;
+        public string TitlePopUp = null!;
+        private BranchOffice branchOffice = new();
+        private BranchOfficeForm? branchOfficeForm;
+
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string Page { get; set; } = "";
+
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string Filter { get; set; } = "";
 
 
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string Page { get; set; } = "";
-
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string Filter { get; set; } = "";
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadAsync();
-    }
-
-    private async Task LoadAsync(int page = 1)
-    {
-
-        if (!string.IsNullOrWhiteSpace(Page))
-        {
-            page = Convert.ToInt32(Page);
-        }
-
-        string url1 = $"api/branchOffices/GetAll?page={page}&filter={Filter}";
-        string url2 = $"api/branchOffices/totalPages?&filter={Filter}";
-
-        var responseHppt = await repository.Get<List<BranchOffice>>(url1);
-        var responseHppt2 = await repository.Get<int>(url2);
-        BranchOffices = responseHppt.Response!;
-        totalPages = responseHppt2.Response!;
-
-
-
-        //var responseHppt = await repository.GetAsync<List<Country>>("api/countries/GetAll");
-        //Countries = responseHppt.Response!;
-    }
-
-    private async Task DeleteAsync(int Id)
-    {
-        var result = await Alert.FireAsync(new SweetAlertOptions
-        {
-            Title = "Confirmación",
-            Text = "¿Esta seguro que quieres borrar el registro?",
-            Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Si"
-        });
-
-        var confirm = string.IsNullOrEmpty(result.Value);
-
-        if (confirm)
-        {
-            return;
-        }
-
-
-        var responseHTTP = await repository.Delete($"api/branchOffices/{Id}");
-
-        if (responseHTTP.Error)
-        {
-            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                navigationManager.NavigateTo("/");
-            }
-            else
-            {
-                var mensajeError = await responseHTTP.GetErrorMessageAsync();
-                await Alert.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-            }
-        }
-        else
+        protected override async Task OnInitializedAsync()
         {
             await LoadAsync();
         }
 
+        private async Task LoadAsync(int page = 1)
+        {
 
+            if (!string.IsNullOrWhiteSpace(Page))
+            {
+                page = Convert.ToInt32(Page);
+            }
+
+            string url1 = $"api/branchOffices/GetAll?page={page}&filter={Filter}";
+            string url2 = $"api/branchOffices/totalPages?&filter={Filter}";
+
+            var responseHppt = await repository.Get<List<BranchOffice>>(url1);
+            var responseHppt2 = await repository.Get<int>(url2);
+            BranchOffices = responseHppt.Response!;
+            totalPages = responseHppt2.Response!;
+
+
+
+            //var responseHppt = await repository.GetAsync<List<Country>>("api/countries/GetAll");
+            //Countries = responseHppt.Response!;
+        }
+
+        private void Add()
+        {
+            TitlePopUp = "Agregar Sucursal";
+            branchOffice = new();
+            ShowPopUp = true;
+        }
+
+        private async Task EditAsync(int BranchOfficeId)
+        {
+            TitlePopUp = "Modificar Ciudad";
+
+
+            var responseHttp = await repository.Get<BranchOffice>($"/api/branchOffices/{BranchOfficeId}");
+            if (responseHttp.Error)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+            else
+            {
+                branchOffice = responseHttp.Response!;
+                ShowPopUp = true;
+            }
+
+        }
+
+        private async Task OnValidSubmit()
+        {
+
+            if (branchOffice?.Id > 0)
+                await Edit();
+            else
+                await Create();
+
+        }
+
+        private async Task Create()
+        {
+            var httpResponse = await repository.Post("/api/branchOffices", branchOffice);
+            if (httpResponse.Error)
+            {
+                var message = await httpResponse.GetErrorMessageAsync();
+                await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+
+            await Return();
+
+            JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+        }
+
+        private async Task Edit()
+        {
+            branchOffice.City = null;
+            var responseHttp = await repository.Put("/api/branchOffices", branchOffice);
+            if (responseHttp.Error)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+
+            await Return();
+
+
+            JS.ShowToast("Se modifico correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+
+        }
+
+        private async Task DeleteAsync(int Id)
+        {
+        
+            if (!await JS.Confirm("Confirmación", "¿Esta seguro que quieres borrar el registro?","SI", TypeAlert.question))
+            {
+                return;
+            }
+            
+            var responseHTTP = await repository.Delete($"api/branchOffices/{Id}");
+
+            if (responseHTTP.Error)
+            {
+                    var mensajeError = await responseHTTP.GetErrorMessageAsync();
+                    await Alert.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            }
+            else
+            {
+                await LoadAsync();
+                JS.ShowToast("Se elimino correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+            }
+            
+
+        }
+
+        private async Task Return()
+        {
+            await LoadAsync();
+            ShowPopUp = false;
+        }
+
+        #region DataGrid
+
+        private async Task SelectedPage(int page)
+        {
+            currentPage = page;
+            await LoadAsync(page);
+        }
+
+        private async Task CleanFilterAsync()
+        {
+            Filter = string.Empty;
+            await ApplyFilterAsync("");
+        }
+
+        private async Task ApplyFilterAsync(string filter)
+        {
+            Filter = filter;
+            int page = 1;
+            await SelectedPage(page);
+        }
+        #endregion
     }
-
-    #region DataGrid
-
-    private async Task SelectedPage(int page)
-    {
-        currentPage = page;
-        await LoadAsync(page);
-    }
-
-    private async Task CleanFilterAsync()
-    {
-        Filter = string.Empty;
-        await ApplyFilterAsync();
-    }
-
-    private async Task ApplyFilterAsync()
-    {
-        int page = 1;
-        await LoadAsync(page);
-        await SelectedPage(page);
-    }
-    #endregion
-}
 
