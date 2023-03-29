@@ -1,15 +1,9 @@
 ﻿@page "/"
+@inject NavigationManager navigationManager
 
-<PageTitle>Index</PageTitle>
 
-<AuthorizeView Roles="Administrador">
-    <Authorized>
-        Autorizado, @context.User.Identity?.Name
-    </Authorized>
-    <NotAuthorized>
-        No Autorizado
-    </NotAuthorized>
-</AuthorizeView>
+<PageTitle>ARE</PageTitle>
+
 
 
 <h1>Hello, world!</h1>
@@ -18,3 +12,20 @@ Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        /*
+        var autenticationState = await authenticationStateTask;
+        var isAutenticated = autenticationState.User.Identity!.IsAuthenticated;
+        if (!isAutenticated)
+        {
+            navigationManager.NavigateTo("Login");
+        }*/
+    }
+}

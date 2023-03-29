@@ -1,13 +1,20 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
+    @if (IsOpenMenu)
+        {
     <div class="sidebar">
         <NavMenu />
     </div>
+        }
 
     <main>
         <div class="top-row px-4">
-            <AuthLinks />
+            <AuthLinks >
+                <BtnMenu>
+                    <button class="btn btn-sm btn-primary float-end" @onclick=@(() => ClickMenu())><i class="oi oi-plus"></i></button>
+                </BtnMenu>
+                </AuthLinks>
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">Acerca de</a>
         </div>
 
@@ -17,3 +24,12 @@
     </main>
 </div>
 
+@code {
+
+    public bool IsOpenMenu { get; set; } = false;
+
+    private async void ClickMenu()
+    {
+        IsOpenMenu = !IsOpenMenu;
+    }
+}

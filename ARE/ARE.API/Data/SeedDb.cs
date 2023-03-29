@@ -1,5 +1,6 @@
 ﻿using ARE.API.Helpers;
 using ARE.Shared.Entities;
+using ARE.Shared.Enums;
 
 namespace ARE.API.Data
 {
@@ -19,11 +20,11 @@ namespace ARE.API.Data
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("Alberto", "Meza","Mata", "alberto_k1@hotmail.com", "322 311 4620", "Administrador");
+            await CheckUserAsync("Alberto", "Meza","Mata", "alberto_k1@hotmail.com", "322 311 4620", UserType.Interno);
 
         }
 
-        private async Task<User> CheckUserAsync(string firstName, string lastName1, string lastName2, string email, string phone, string userType)
+        private async Task<User> CheckUserAsync(string firstName, string lastName1, string lastName2, string email, string phone, UserType userType)
         {
             var user = await _userHelper.GetUserAsync(email);
             if (user == null)
@@ -35,7 +36,8 @@ namespace ARE.API.Data
                     LastName2 = lastName2, 
                     Email = email,
                     UserName = email,
-                    PhoneNumber = phone
+                    PhoneNumber = phone,
+                    UserType = UserType.Interno
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");
@@ -47,8 +49,8 @@ namespace ARE.API.Data
 
         private async Task CheckRolesAsync()
         {
-            await _userHelper.CheckRoleAsync("Administrador");
-            await _userHelper.CheckRoleAsync("Usuario");
+            await _userHelper.CheckRoleAsync("Interno");
+            await _userHelper.CheckRoleAsync("Externo");
         }
 
 

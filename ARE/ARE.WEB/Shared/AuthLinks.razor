@@ -1,6 +1,9 @@
-﻿<AuthorizeView>
+﻿
+@BtnMenu
+
+<AuthorizeView>
     <Authorized>
-        <span>Hola, @context.User.Identity!.Name</span>
+        <span>Hola, @context.User.Claims!.Where(x => x.Type == "Nombre").FirstOrDefault().Value</span>
         <a href="Logout" class="nav-link btn btn-link">Cerrar Sesión</a>
     </Authorized>
     <NotAuthorized>
@@ -8,3 +11,10 @@
         <a href="Login" class="nav-link btn btn-link">Iniciar Sesión</a>
     </NotAuthorized>
 </AuthorizeView>
+
+
+@code {
+
+    [Parameter]
+    public RenderFragment? BtnMenu { get; set; }
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
+using ARE.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace ARE.Shared.Entities
@@ -21,6 +22,9 @@ namespace ARE.Shared.Entities
         [MaxLength(100, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string LastName2 { get; set; } = null!;
+
+        [Display(Name = "Tipo de usuario")]
+        public UserType UserType { get; set; }
 
         [Display(Name = "Foto")]
         public string? Photo { get; set; }

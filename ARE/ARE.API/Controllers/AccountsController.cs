@@ -30,9 +30,7 @@ namespace ARE.API.Controllers
             var result = await _userHelper.AddUserAsync(user, model.Password);
             if (result.Succeeded)
             {
-                //TODO: Agregar tipo de Usuario en el modelo de User
-                //await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
-                await _userHelper.AddUserToRoleAsync(user, "Administrador");
+                await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
                 return Ok(BuildToken(user));
             }
 
@@ -58,8 +56,7 @@ namespace ARE.API.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email!),
-                new Claim(ClaimTypes.Role, "Administrador"),
-                //new Claim(ClaimTypes.Role, user.UserType.ToString()),
+                new Claim(ClaimTypes.Role, user.UserType.ToString()),
                 new Claim("Nombre", user.Name),
                 new Claim("Apellido1", user.LastName1),
                 new Claim("Apellido2", user.LastName2),
