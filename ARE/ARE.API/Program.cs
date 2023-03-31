@@ -54,9 +54,14 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=DockerConnection"));
 builder.Services.AddTransient<SeedDb>();
+builder.Services.AddScoped<IUserHelper, UserHelper>();
+builder.Services.AddScoped<IFileStorage, FileStorage>();
+builder.Services.AddScoped<IMailHelper, MailHelper>();
 
 builder.Services.AddIdentity<User, IdentityRole>(x =>
 {
+    x.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+    x.SignIn.RequireConfirmedEmail = true;
     x.User.RequireUniqueEmail = true; //usurio = a correo 
     x.Password.RequireDigit = false;
     x.Password.RequiredUniqueChars = 0;
@@ -67,7 +72,6 @@ builder.Services.AddIdentity<User, IdentityRole>(x =>
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<IUserHelper, UserHelper>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

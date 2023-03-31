@@ -20,7 +20,7 @@ namespace ARE.API.Data
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("Alberto", "Meza","Mata", "alberto_k1@hotmail.com", "322 311 4620", UserType.Interno);
+            //await CheckUserAsync("Alberto", "Meza","Mata", "alberto_k1@hotmail.com", "322 311 4620", UserType.Interno);
 
         }
 
@@ -42,6 +42,10 @@ namespace ARE.API.Data
 
                 await _userHelper.AddUserAsync(user, "123456");
                 await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                await _userHelper.ConfirmEmailAsync(user, token);
+
             }
 
             return user;

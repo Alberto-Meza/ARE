@@ -10,11 +10,13 @@
     <None Remove="Entities\" />
     <None Remove="DTOs\" />
     <None Remove="Enums\" />
+    <None Remove="Responses\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
     <Folder Include="DTOs\" />
     <Folder Include="Enums\" />
+    <Folder Include="Responses\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.3" />
