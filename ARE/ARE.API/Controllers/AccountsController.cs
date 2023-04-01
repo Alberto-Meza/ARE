@@ -142,16 +142,16 @@ namespace ARE.API.Controllers
         {
             try
             {
-                if (!string.IsNullOrEmpty(user.Photo))
-                {
-                    var photoUser = Convert.FromBase64String(user.Photo);
-                    user.Photo = await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
-                }
-
                 var currentUser = await _userHelper.GetUserAsync(user.Email!);
                 if (currentUser == null)
                 {
                     return NotFound();
+                }
+
+                if (!string.IsNullOrEmpty(user.Photo))
+                {
+                    var photoUser = Convert.FromBase64String(user.Photo);
+                    user.Photo = !string.IsNullOrEmpty(currentUser.Photo) ? await _fileStorage.EditFileAsync(photoUser,".jpg",_container,currentUser.Photo) : await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
                 }
 
                 currentUser.Name = user.Name;
@@ -164,7 +164,7 @@ namespace ARE.API.Controllers
                 var result = await _userHelper.UpdateUserAsync(currentUser);
                 if (result.Succeeded)
                 {
-                    return NoContent();
+                    return Ok(BuildToken(currentUser));
                 }
 
                 return BadRequest(result.Errors.FirstOrDefault());
@@ -224,6 +224,84 @@ namespace ARE.API.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpPost("ResedToken")]
+        public async Task<ActionResult> ResedToken([FromBody] EmailDTO model)
+        {
+            User user = await _userHelper.GetUserAsync(model.Email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+            var tokenLink = Url.Action("ConfirmEmail", "accounts", new
+            {
+                userid = user.Id,
+                token = myToken
+            }, HttpContext.Request.Scheme, _configuration["UrlWEB"]);
+
+            var response = _mailHelper.SendMail(user.FullName, user.Email!,
+                $"ARE - Confirmación de cuenta",
+                $"<h1>ARE - Confirmación de cuenta</h1>" +
+                $"<p>Para habilitar el usuario, por favor hacer clic 'Confirmar Email':</p>" +
+                $"<b><a href ={tokenLink}>Confirmar Email</a></b>");
+
+            if (response.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(response.Message);
+        }
+
+        [HttpPost("RecoverPassword")]
+        public async Task<ActionResult> RecoverPassword([FromBody] EmailDTO model)
+        {
+            User user = await _userHelper.GetUserAsync(model.Email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+            var tokenLink = Url.Action("ResetPassword", "accounts", new
+            {
+                userid = user.Id,
+                token = myToken
+            }, HttpContext.Request.Scheme, _configuration["UrlWEB"]);
+
+            var response = _mailHelper.SendMail(user.FullName, user.Email!,
+                $"ARE - Recuperación de contraseña",
+                $"<h1>ARE - Recuperación de contraseña</h1>" +
+                $"<p>Para recuperar su contraseña, por favor hacer clic 'Recuperar Contraseña':</p>" +
+                $"<b><a href ={tokenLink}>Recuperar Contraseña</a></b>");
+
+            if (response.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(response.Message);
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            User user = await _userHelper.GetUserAsync(model.Email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.Errors.FirstOrDefault()!.Description);
         }
 
     }
