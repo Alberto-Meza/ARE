@@ -23,7 +23,7 @@ namespace ARE.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string LastName2 { get; set; } = null!;
 
-        [Display(Name = "Grado Escolar")]
+        [Display(Name = "Genero")]
         [MaxLength(100, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Gender { get; set; } = null!;
@@ -105,6 +105,8 @@ namespace ARE.Shared.Entities
 
         #endregion
 
+
+        /*
         #region Info Tutor1
         [Display(Name = "Nombre")]
         [MaxLength(300, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
@@ -145,6 +147,7 @@ namespace ARE.Shared.Entities
         public string RelationshipTutor2 { get; set; } = null!;
 
         #endregion
+        */
 
         public int? BloodTypeId { get; set; } = null!;
 

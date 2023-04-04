@@ -1,0 +1,350 @@
+﻿@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+
+    <div class="card">
+        <div class="card-header">
+            <span>
+
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <i class="oi oi-globe"></i> @Title
+                    </div>
+
+                    <div class="col-3">
+                        <button class="btn btn-sm float-end" type="button" @onclick="ReturnAction"><i class="oi oi-x"></i></button>
+                    </div>
+                </div>
+
+            </span>
+        </div>
+        <div class="card-body">
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                </div>
+                <div class="col-6">
+                </div>
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>País:</label>
+                        <div>
+                            <select class="form-select" @onchange="CountryChangedAsync">
+                                @if (countries is not null)
+                                {
+                                    @foreach (var country in countries)
+                                    {
+                                        if (@country.Value == CountrySelected)
+                                        {
+                                            <option selected value="@country.Value">@country.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@country.Value">@country.Text</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Estado:</label>
+                        <div>
+                            <select class="form-select" @onchange="StateChangedAsync">
+                                @if (states is not null)
+                                {
+                                    @foreach (var item in states)
+                                    {
+                                        if (@item.Value == CountrySelected)
+                                        {
+                                            <option selected value="@item.Value">@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Ciudad:</label>
+                        <div>
+                            <select class="form-select" @bind="Student.CityId">
+                                @if (cities is not null)
+                                {
+                                    @foreach (var item in cities)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Nombre:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Name" />
+                            <ValidationMessage For="@(() => Student.Name)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Contacto:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Name" />
+                            <ValidationMessage For="@(() => Student.Name)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Telefono:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Name" />
+                            <ValidationMessage For="@(() => Student.Name)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Correo:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Name" />
+                            <ValidationMessage For="@(() => Student.Name)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Colonia:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Suburb" />
+                            <ValidationMessage For="@(() => Student.Suburb)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Calle:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Street" />
+                            <ValidationMessage For="@(() => Student.Street)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Nro:</label>
+                        <div>
+                            <InputNumber class="form-control" @bind-Value="@Student.Number" />
+                            <ValidationMessage For="@(() => Student.Number)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Codigo Postal:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.ZipCode" />
+                            <ValidationMessage For="@(() => Student.ZipCode)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+            <button class="btn btn-success" type="button" @onclick="ReturnAction">Regresar</button>
+        </div>
+    </div>
+
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+    private List<ItemCombo>? countries;
+    private List<ItemCombo>? states;
+    private List<ItemCombo>? cities;
+    private List<FilterDTO> filters;
+    private string CountrySelected;
+    private string StateSelected;
+
+
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    [EditorRequired]
+    public Student Student{ get; set; } = new Student();
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfully { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new(Student);
+
+        if (Student.Id > 0)
+        {
+            CountrySelected = Student.City.State.CountryId.ToString();
+            StateSelected = Student.City.StateId.ToString();
+        }
+        else
+        {
+            CountrySelected = "0";
+            StateSelected = "";
+        }
+        await InitCombos();
+    }
+
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasMofied = editContext.IsModified();
+        if (!formWasMofied || FormPostedSuccessfully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+        {
+            Title = "Confirmación",
+            Text = "¿Deseas abandonar la página y perder los cambios?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            CancelButtonText = "No",
+            ConfirmButtonText = "Si"
+        });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+    }
+
+
+    private async Task InitCombos()
+    {
+        await LoadCountriesAsync();
+        await LoadStatesAsyn(CountrySelected);
+        await LoadCitiesAsyn(StateSelected);
+    }
+
+    private async Task LoadCountriesAsync()
+    {
+        //loading = true;
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=Pais");
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        countries = responseHttp.Response;
+        //loading = false;
+    }
+    private async Task CountryChangedAsync(ChangeEventArgs e)
+    {
+        CountrySelected = (string)e.Value!;
+        await LoadStatesAsyn(CountrySelected);
+    }
+
+    private async Task LoadStatesAsyn(string CountryId)
+    {
+        //loading = true;
+        filters = new List<FilterDTO>();
+        filters.Add(new FilterDTO() { Campo = "CountryId", Valor = CountryId, Operator = OperatorType.Igual });
+        var responseHttp = await repository.Post<List<FilterDTO>, List<ItemCombo>>("/api/utils/GetComboByFilter?name=State", filters);
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        states = responseHttp.Response;
+        //loading = false;
+    }
+    private async Task StateChangedAsync(ChangeEventArgs e)
+    {
+        var selectedState = (string)e.Value!;
+        await LoadCitiesAsyn(selectedState);
+    }
+
+    private async Task LoadCitiesAsyn(string StateId)
+    {
+        //loading = true;
+        filters = new List<FilterDTO>();
+        filters.Add(new FilterDTO() { Campo = "StateId", Valor = StateId, Operator = OperatorType.Igual });
+        var responseHttp = await repository.Post<List<FilterDTO>, List<ItemCombo>>("/api/utils/GetComboByFilter?name=City", filters);
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        cities = responseHttp.Response;
+        //loading = false;
+    }
+
+
+}
+

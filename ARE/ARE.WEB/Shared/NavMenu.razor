@@ -25,13 +25,19 @@
             </NavLink>
         </div>
         @if (collapseMenu)
-            {
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/branchOffices">
+                    <span class="oi oi-box" aria-hidden="true"></span> Sucursales
+                </NavLink>
+            </div>
+        }
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/branchOffices">
-                <span class="oi oi-box" aria-hidden="true"></span> Sucursales
+            <NavLink class="nav-link" href="/students">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Estudiantes
             </NavLink>
         </div>
-            }
+        
     </nav>
 </div>
 
