@@ -58,14 +58,18 @@ else
 
             <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);"
                  aria-modal="true" role="dialog">
-                <div class="modal-dialog modal-dialog-scrollable modal-xl">
-                    <div class="modal-content" style="background: transparent">
-                        
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                    <div class="modal-content card">
+                        <div class="modal-header" >
+                            <h5 class="modal-title"> <i class=@IconTitle></i> @TitlePopUp </h5>
+
+                                   <button class="btn-close" type="button" @onclick="ReturnAction"></button>
+                        </div>
                         <div class="modal-body">
 
                             @PopUpAddEdit
                         </div>
-                       
+                        
                     </div>
                 </div>
             </div>
@@ -121,6 +125,9 @@ else
     public string TitleCatalogo { get; set; } = string.Empty;
 
     [Parameter]
+    public string TitlePopUp { get; set; } = string.Empty;
+
+    [Parameter]
     public string IconTitle { get; set; } = string.Empty;
 
 
@@ -130,6 +137,11 @@ else
     private async void Add()
     {
         await AddAsync.InvokeAsync();
+    }
+
+    private void ReturnAction()
+    {
+        ShowPopUp = false;
     }
 
 }

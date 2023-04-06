@@ -20,13 +20,37 @@ namespace ARE.API.Data
 
 			switch (name.ToUpper())
 			{
-				case "PAIS":
-					LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Pais --" });
-					_context.Countries.ToList().ForEach(x => {
+				
+                case "BLOODTYPE":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Tipo Sangineo --" });
+                    _context.BloodTypes.ToList().ForEach(x => {
                         LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
                     });
-					break;
-				default:
+                    break;
+                case "CIVILSTATUS":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Estado Civil --" });
+                    _context.CivilStatuses.ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
+                case "GENDER":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Genero --" });
+                    LstResult.Add(new ItemCombo() { Value = "M", Text = " M " });
+                    LstResult.Add(new ItemCombo() { Value = "F", Text = " F " });
+                    break;
+                case "PAIS":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Pais --" });
+                    _context.Countries.ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
+                case "SCHOOLGRADES":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Grado --" });
+                    _context.SchoolGrades.ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
+                default:
 					break;
 			}
 

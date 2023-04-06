@@ -16,7 +16,8 @@
              SelectedPage="SelectedPage"
              ApplyFilterAsync="ApplyFilterAsync"
              CleanFilterAsync="CleanFilterAsync"
-             AddAsync="Add">
+             AddAsync="Add"
+             TitlePopUp="@TitlePopUp">
 
 
 
@@ -63,15 +64,17 @@
     </Body>
 
     <PopUpAddEdit>
-
-        <StudentForm @ref="studentForm" Title="@TitlePopUp" Student="student" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
-
+        
+            <StudentForm @ref="studentForm" Title="@TitlePopUp" Student="student" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
+        
     </PopUpAddEdit>
 </GenericList>
 
 
 
 @code {
+  
+
     public List<Student>? Students { get; set; }
     private int currentPage = 1;
     private int totalPages;

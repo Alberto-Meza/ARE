@@ -8,22 +8,8 @@
     <DataAnnotationsValidator />
 
 
-    <div class="card">
-        <div class="card-header">
-            <span>
-
-                <div class="row align-items-center">
-                    <div class="col-9">
-                        <i class="oi oi-globe"></i> @Title
-                    </div>
-
-                    <div class="col-3">
-                        <button class="btn btn-sm float-end" type="button" @onclick="ReturnAction"><i class="oi oi-x"></i></button>
-                    </div>
-                </div>
-
-            </span>
-        </div>
+    <div>
+        
         <div class="card-body">
 
             <div class="row align-items-center">
@@ -33,8 +19,172 @@
                 </div>
             </div>
 
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Nombre:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Name" />
+                            <ValidationMessage For="@(() => Student.Name)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Apellido Paterno:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.LastName1" />
+                            <ValidationMessage For="@(() => Student.LastName1)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Apellido Materno:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.LastName2" />
+                            <ValidationMessage For="@(() => Student.LastName2)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Genero:</label>
+                        <div>
+                            <select class="form-select" @bind="Student.Gender">
+                                @if (genders is not null)
+                                {
+                                    @foreach (var item in genders)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Fecha Nacimiento:</label>
+                        <div>
+                            <InputDate class="form-control" @bind-Value="@Student.BirthDate" DisplayName="Production Date" />
+                            <ValidationMessage For="@(() => Student.BirthDate)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Lugar de nacimiento:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.BirthPlace" />
+                            <ValidationMessage For="@(() => Student.BirthPlace)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <label class="form-check-label">Asma?:</label>
+                            <InputCheckbox class="form-check-input" @bind-Value="@Student.Asthma" />
+                            <ValidationMessage For="@(() => Student.Asthma)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        
+                        <div class="form-check form-switch">
+                            <label class="form-check-label">Combulsion?:</label>
+                            <InputCheckbox class="form-check-input" @bind-Value="@Student.Convulsions" />
+                            <ValidationMessage For="@(() => Student.Convulsions)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Otras condiciones:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.OtherConditions" />
+                            <ValidationMessage For="@(() => Student.OtherConditions)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Alergias:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Allergies" />
+                            <ValidationMessage For="@(() => Student.Allergies)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Enfermedades:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Diseases" />
+                            <ValidationMessage For="@(() => Student.Diseases)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Medicinas:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Medicines" />
+                            <ValidationMessage For="@(() => Student.Medicines)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Observaciones:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Observation" />
+                            <ValidationMessage For="@(() => Student.Observation)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Fecha Entrada:</label>
+                        <div>
+                            <InputDate class="form-control" @bind-Value="@Student.FirstDateAppointment" />
+                            <ValidationMessage For="@(() => Student.FirstDateAppointment)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <label class="form-check-label">Activo:</label>
+                            <InputCheckbox class="form-check-input" @bind-Value="@Student.IsActive" />
+                            <ValidationMessage For="@(() => Student.IsActive)" />
+                        </div>
+                    </div>
+                </div>
                 <div class="col-6">
                     <div class="mb-3">
                         <label>País:</label>
@@ -59,6 +209,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="row align-items-center">
                 <div class="col-6">
                     <div class="mb-3">
                         <label>Estado:</label>
@@ -84,10 +237,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-
-            <div class="row align-items-center">
                 <div class="col-6">
                     <div class="mb-3">
                         <label>Ciudad:</label>
@@ -101,58 +250,6 @@
                                     }
                                 }
                             </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="mb-3">
-                        <label>Nombre:</label>
-                        <div>
-                            <InputText class="form-control" @bind-Value="@Student.Name" />
-                            <ValidationMessage For="@(() => Student.Name)" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="row align-items-center">
-                <div class="col-6">
-                    <div class="mb-3">
-                        <label>Contacto:</label>
-                        <div>
-                            <InputText class="form-control" @bind-Value="@Student.Name" />
-                            <ValidationMessage For="@(() => Student.Name)" />
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="mb-3">
-                        <label>Telefono:</label>
-                        <div>
-                            <InputText class="form-control" @bind-Value="@Student.Name" />
-                            <ValidationMessage For="@(() => Student.Name)" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row align-items-center">
-                <div class="col-6">
-                    <div class="mb-3">
-                        <label>Correo:</label>
-                        <div>
-                            <InputText class="form-control" @bind-Value="@Student.Name" />
-                            <ValidationMessage For="@(() => Student.Name)" />
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="mb-3">
-                        <label>Colonia:</label>
-                        <div>
-                            <InputText class="form-control" @bind-Value="@Student.Suburb" />
-                            <ValidationMessage For="@(() => Student.Suburb)" />
                         </div>
                     </div>
                 </div>
@@ -182,6 +279,15 @@
             <div class="row align-items-center">
                 <div class="col-6">
                     <div class="mb-3">
+                        <label>Colonia:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@Student.Suburb" />
+                            <ValidationMessage For="@(() => Student.Suburb)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
                         <label>Codigo Postal:</label>
                         <div>
                             <InputText class="form-control" @bind-Value="@Student.ZipCode" />
@@ -189,10 +295,66 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="row align-items-center">
                 <div class="col-6">
+                    <div class="mb-3">
+                        <label>Tipo Sangineo:</label>
+                        <div>
+                            <select class="form-select" @bind="Student.BloodTypeId">
+                                @if (bloodTypes is not null)
+                                {
+                                    @foreach (var item in bloodTypes)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Estado Civil:</label>
+                        <div>
+                            <select class="form-select" @bind="Student.CivilStatusId">
+                                @if (civilStatus is not null)
+                                {
+                                    @foreach (var item in civilStatus)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Grado Escolar:</label>
+                        <div>
+                            <select class="form-select" @bind="Student.SchoolGradeId">
+                                @if (schoolGrades is not null)
+                                {
+                                    @foreach (var item in schoolGrades)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
+                    </div>
+                </div>
+            </div>
 
 
         </div>
@@ -206,13 +368,18 @@
 
 @code {
     private EditContext editContext = null!;
+    private List<ItemCombo>? genders;
     private List<ItemCombo>? countries;
     private List<ItemCombo>? states;
     private List<ItemCombo>? cities;
+    private List<ItemCombo>? bloodTypes;
+    private List<ItemCombo>? civilStatus;
+    private List<ItemCombo>? schoolGrades;
+
     private List<FilterDTO> filters;
     private string CountrySelected;
     private string StateSelected;
-
+    private string? imageUrl;
 
     [Parameter]
     public string Title { get; set; } = string.Empty;
@@ -235,6 +402,8 @@
     {
         editContext = new(Student);
 
+
+
         if (Student.Id > 0)
         {
             CountrySelected = Student.City.State.CountryId.ToString();
@@ -243,9 +412,17 @@
         else
         {
             CountrySelected = "0";
-            StateSelected = "";
+            StateSelected = "0";
         }
+
         await InitCombos();
+
+        if (!string.IsNullOrEmpty(Student.PhotoPath))
+        {
+            imageUrl = Student.PhotoPath;
+            Student.PhotoPath = null;
+        }
+
     }
 
     private async Task OnBeforeInternalNavigation(LocationChangingContext context)
@@ -278,9 +455,74 @@
 
     private async Task InitCombos()
     {
+        LoadGendersAsync();
+        LoadBloodTypesAsync();
+        LoadCivilStatusAsync();
+        LoadSchoolGradesAsync();
         await LoadCountriesAsync();
         await LoadStatesAsyn(CountrySelected);
         await LoadCitiesAsyn(StateSelected);
+    }
+
+    private async Task LoadGendersAsync()
+    {
+        //loading = true;
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=Gender");
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        genders = responseHttp.Response;
+        //loading = false;
+    }
+    private async Task LoadBloodTypesAsync()
+    {
+        //loading = true;
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=BloodType");
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        bloodTypes = responseHttp.Response;
+        //loading = false;
+    }
+    private async Task LoadCivilStatusAsync()
+    {
+        //loading = true;
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=CivilStatus");
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        civilStatus = responseHttp.Response;
+        //loading = false;
+    }
+    private async Task LoadSchoolGradesAsync()
+    {
+        //loading = true;
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=SchoolGrades");
+        if (responseHttp.Error)
+        {
+            //  loading = false;
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        schoolGrades = responseHttp.Response;
+        //loading = false;
     }
 
     private async Task LoadCountriesAsync()
@@ -345,6 +587,11 @@
         //loading = false;
     }
 
+    private void ImageSelected(string imagenBase64)
+    {
+        Student.PhotoPath = imagenBase64;
+        imageUrl = null;
+    }
 
-}
+    }
 

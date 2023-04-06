@@ -29,7 +29,6 @@ namespace ARE.Shared.Entities
         public string Gender { get; set; } = null!;
 
         [Display(Name = "Fecha Nacimiento")]
-        [MaxLength(100, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public DateTime? BirthDate { get; set; } = null!;
 
@@ -75,17 +74,17 @@ namespace ARE.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public DateTime? FirstDateAppointment { get; set; } = null!;
 
-        public string Folio { get; set; } = null!;
+        public string? Folio { get; set; }
 
-        public byte[] Fingerprint1 { get; set; } = null!;
+        public byte[]? Fingerprint1 { get; set; } 
 
-        public byte[] Fingerprint2 { get; set; } = null!;
+        public byte[]? Fingerprint2 { get; set; } 
 
         [Display(Name = "Activo?")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public bool IsActive { get; set; }
 
-        public string PhotoPath { get; set; } = null!;
+        public string? PhotoPath { get; set; }
 
         #region Domicilio
 
