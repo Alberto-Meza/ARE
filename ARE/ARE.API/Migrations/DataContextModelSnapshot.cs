@@ -47,7 +47,7 @@ namespace ARE.API.Migrations
                         .IsUnique()
                         .HasFilter("[EntryDate] IS NOT NULL");
 
-                    b.ToTable("Assistances");
+                    b.ToTable("Assistances", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.BloodType", b =>
@@ -68,7 +68,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("BloodTypes");
+                    b.ToTable("BloodTypes", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.BranchOffice", b =>
@@ -127,7 +127,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name", "CityId")
                         .IsUnique();
 
-                    b.ToTable("BranchOffices");
+                    b.ToTable("BranchOffices", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Charge", b =>
@@ -161,7 +161,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("SubTypeOfChargeId");
 
-                    b.ToTable("Charges");
+                    b.ToTable("Charges", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.ChargeDates", b =>
@@ -188,7 +188,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("ChargeId");
 
-                    b.ToTable("ChargeDates");
+                    b.ToTable("ChargeDates", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.ChargeDetail", b =>
@@ -222,7 +222,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("MethodOfPaymentId");
 
-                    b.ToTable("ChargeDetails");
+                    b.ToTable("ChargeDetails", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.City", b =>
@@ -248,7 +248,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name", "StateId")
                         .IsUnique();
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.CivilStatus", b =>
@@ -269,7 +269,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("CivilStatuses");
+                    b.ToTable("CivilStatuses", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Company", b =>
@@ -290,7 +290,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Country", b =>
@@ -311,7 +311,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Department", b =>
@@ -332,7 +332,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Employee", b =>
@@ -426,7 +426,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("ShiftId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.EmployeeType", b =>
@@ -447,7 +447,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("EmployeeTypes");
+                    b.ToTable("EmployeeTypes", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Job", b =>
@@ -473,7 +473,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.MethodOfPayment", b =>
@@ -494,7 +494,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("MethodOfPayments");
+                    b.ToTable("MethodOfPayments", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.PaymentPeriod", b =>
@@ -515,7 +515,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("PaymentPeriods");
+                    b.ToTable("PaymentPeriods", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.PendingCharges", b =>
@@ -533,7 +533,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("AssistanceId");
 
-                    b.ToTable("PendingCharges");
+                    b.ToTable("PendingCharges", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.SchoolGrade", b =>
@@ -554,7 +554,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("SchoolGrades");
+                    b.ToTable("SchoolGrades", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Shift", b =>
@@ -575,7 +575,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Shifts");
+                    b.ToTable("Shifts", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.State", b =>
@@ -601,7 +601,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name", "CountryId")
                         .IsUnique();
 
-                    b.ToTable("States");
+                    b.ToTable("States", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.Student", b =>
@@ -732,7 +732,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("SchoolGradeId");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.StudentType", b =>
@@ -758,7 +758,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("StudentTypes");
+                    b.ToTable("StudentTypes", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.StudentTypeRelationship", b =>
@@ -782,7 +782,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("StudentTypeId");
 
-                    b.ToTable("StudentTypeRelationships");
+                    b.ToTable("StudentTypeRelationships", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.SubTypeOfCharge", b =>
@@ -809,7 +809,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("TypeOfChargeId");
 
-                    b.ToTable("SubTypeOfCharges");
+                    b.ToTable("SubTypeOfCharges", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.TableDescription", b =>
@@ -840,7 +840,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("TableDescriptions");
+                    b.ToTable("TableDescriptions", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.TypeOfCharge", b =>
@@ -861,7 +861,7 @@ namespace ARE.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("TypeOfCharges");
+                    b.ToTable("TypeOfCharges", (string)null);
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.User", b =>

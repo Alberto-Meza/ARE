@@ -35,7 +35,7 @@ namespace ARE.Shared.Entities
         [Display(Name = "Lugar Nacimiento")]
         [MaxLength(100, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string BirthPlace { get; set; } = null!;
+        public string BirthPlace { get; set; } = "";
 
         [Display(Name = "Asma?")]
         public bool Asthma { get; set; }
@@ -45,24 +45,23 @@ namespace ARE.Shared.Entities
 
         [Display(Name = "Otros Padecimeintos")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        public string OtherConditions { get; set; } = null!;
+        public string OtherConditions { get; set; } = "";
 
         [Display(Name = "Alergias")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        public string Allergies { get; set; } = null!;
+        public string Allergies { get; set; } = "";
 
         [Display(Name = "Enfermedades")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        public string Diseases { get; set; } = null!;
+        public string Diseases { get; set; } = "";
 
         [Display(Name = "Medicamentos")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        public string Medicines { get; set; } = null!;
+        public string Medicines { get; set; } = "";
 
         [Display(Name = "Observaciones")]
         [MaxLength(500, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Observation { get; set; } = null!;
+        public string Observation { get; set; } = "";
 
         /*[Display(Name = "Correo")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
@@ -90,17 +89,16 @@ namespace ARE.Shared.Entities
 
         [Display(Name = "Calle")]
         [MaxLength(255, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Street { get; set; } = null!;
+        public string Street { get; set; } = "";
 
         [Display(Name = "Numero")]
         public int? Number { get; set; } = null!;
 
         [Display(Name = "Colonia")]
-        public string Suburb { get; set; } = null!;
+        public string Suburb { get; set; } = "";
 
         [Display(Name = "CP.")]
-        public string ZipCode { get; set; } = null!;
+        public string ZipCode { get; set; } = "";
 
         #endregion
 
@@ -155,7 +153,13 @@ namespace ARE.Shared.Entities
         public int? SchoolGradeId { get; set; } = null!;
 
         public int? CityId { get; set; } = null!;
-        
+
+
+
+        public ICollection<StudentTypeRelationship>? StudentTypeRelationships { get; set; }
+
+        [Display(Name = "TiposEstudiante")]
+        public int StudentTypeNumber => StudentTypeRelationships == null ? 0 : StudentTypeRelationships.Count;
 
 
 

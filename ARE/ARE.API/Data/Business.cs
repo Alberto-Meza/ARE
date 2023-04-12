@@ -50,6 +50,12 @@ namespace ARE.API.Data
                         LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
                     });
                     break;
+                case "STUDENTTYPES":
+                    //LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Grado --" });
+                    _context.StudentTypes.ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
                 default:
 					break;
 			}

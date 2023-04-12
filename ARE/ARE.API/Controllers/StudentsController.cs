@@ -31,6 +31,7 @@ namespace ARE.API.Controllers
                                     .Include(x => x.City)
                                     .ThenInclude(x=>x.State)
                                     .ThenInclude(x=>x.Country)
+                                    .Include(x=>x.StudentTypeRelationships)
                                     .FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
             {
@@ -41,15 +42,25 @@ namespace ARE.API.Controllers
 
         }
 
-        public override async Task<ActionResult> PostAsync([FromBody] Student entity)
+        [HttpPost("CreateStudent")]
+        public async Task<ActionResult> CreateStudent([FromBody] StudentDTO entity)
         {
+            Student student = entity.ToStudent();
+
+            foreach (var studentTypeId in entity.StudentTypeIds!)
+            {
+                student.StudentTypeRelationships!.Add(
+                    new StudentTypeRelationship { StudentType = await _context.StudentTypes.FirstOrDefaultAsync(x => x.Id == studentTypeId)});
+            }
+
+
             if (!string.IsNullOrEmpty(entity.PhotoPath))
             {
                 var photoUser = Convert.FromBase64String(entity.PhotoPath);
-                entity.PhotoPath = await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
+                student.PhotoPath = await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
             }
-
-            return await base.PostAsync(entity);
+            await base.PostAsync(student);
+            return Ok(entity);
         }
 
         public override async Task<ActionResult> PutAsync([FromBody] Student entity)

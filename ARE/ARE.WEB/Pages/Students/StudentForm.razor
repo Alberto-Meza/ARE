@@ -102,7 +102,7 @@
                 </div>
                 <div class="col-6">
                     <div class="mb-3">
-                        
+
                         <div class="form-check form-switch">
                             <label class="form-check-label">Combulsion?:</label>
                             <InputCheckbox class="form-check-input" @bind-Value="@Student.Convulsions" />
@@ -351,6 +351,15 @@
                 </div>
                 <div class="col-6">
                     <div class="mb-3">
+                        <label>Tipo Alumno:</label>
+                        <MultipleSelector NonSelected="nonSelected" Selected="selected" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <div class="mb-3">
                         <InputImg Label="Foto" ImageSelected="ImageSelected" ImageURL="@imageUrl" />
                     </div>
                 </div>
@@ -382,6 +391,18 @@
     private string? imageUrl;
 
     [Parameter]
+    public List<MultipleSelectorModel> selected { get; set; } = new();
+    [Parameter]
+    public List<MultipleSelectorModel> nonSelected { get; set; } = new();
+
+    /*[Parameter]
+    public List<StudentType> SelectedStudentTypes { get; set; } = new();
+
+    [Parameter]
+    public List<StudentType> NonSelectedStudentTypes { get; set; } = new();
+    */
+
+    [Parameter]
     public string Title { get; set; } = string.Empty;
 
     [Parameter]
@@ -404,6 +425,7 @@
 
 
 
+
         if (Student.Id > 0)
         {
             CountrySelected = Student.City.State.CountryId.ToString();
@@ -414,6 +436,10 @@
             CountrySelected = "0";
             StateSelected = "0";
         }
+
+        //selected = SelectedStudentTypes.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
+        //nonSelected = NonSelectedStudentTypes.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
+
 
         await InitCombos();
 
@@ -453,6 +479,7 @@
     }
 
 
+
     private async Task InitCombos()
     {
         LoadGendersAsync();
@@ -463,6 +490,7 @@
         await LoadStatesAsyn(CountrySelected);
         await LoadCitiesAsyn(StateSelected);
     }
+
 
     private async Task LoadGendersAsync()
     {
