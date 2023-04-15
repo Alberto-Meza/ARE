@@ -6,8 +6,7 @@
 
 
 
-<GenericList ShowPopUp="ShowPopUp"
-             TitleCatalogo="Tipos de Alumnos"
+<GenericList TitleCatalogo="Tipos de Alumnos"
              IconTitle="oi oi-box"
              MyList="StudentTypes"
              Filter=@Filter
@@ -16,11 +15,7 @@
              SelectedPage="SelectedPage"
              ApplyFilterAsync="ApplyFilterAsync"
              CleanFilterAsync="CleanFilterAsync"
-             AddAsync="Add"
-             TitlePopUp="@TitlePopUp">
-
-
-
+             AddAsync="Add">
     <Body>
 
         <table class="table table-striped">
@@ -55,13 +50,14 @@
 
     </Body>
 
-    <PopUpAddEdit>
-
-        <StudentTypeForm @ref="studentTypeForm" Title="@TitlePopUp" StudentType="studentType" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
-
-    </PopUpAddEdit>
+   
 </GenericList>
 
+
+<CascadingValue Value="helperActions">
+    <PopUpByComponent @ref="PopUpComponent" IconTitle="oi oi-box" TitlePopUp="@TitlePopUp"
+                      Tipo="typeof(StudentTypeForm)" parameters="parameters" Modelo="studentType"></PopUpByComponent>
+</CascadingValue>
 
 
 @code {
@@ -70,10 +66,13 @@
     public List<StudentType>? StudentTypes { get; set; }
     private int currentPage = 1;
     private int totalPages;
-    private bool ShowPopUp = false;
-    public string TitlePopUp = null!;
     private StudentType studentType = new();
-    private StudentTypeForm? studentTypeForm;
+
+    public string TitlePopUp = null!;
+    public IDictionary<string, object> parameters { get; set; } = new Dictionary<string, object>();
+    HelperActions helperActions = new HelperActions();
+    private PopUpByComponent<StudentType> PopUpComponent;
+
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -86,6 +85,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        helperActions.Action = OnValidSubmit;
+        parameters.Add("Model", studentType);
         await LoadAsync();
     }
 
@@ -104,23 +105,21 @@
         var responseHppt2 = await repository.Get<int>(url2);
         StudentTypes = responseHppt.Response!;
         totalPages = responseHppt2.Response!;
+        StateHasChanged();
 
-
-
-        //var responseHppt = await repository.GetAsync<List<Country>>("api/countries/GetAll");
-        //Countries = responseHppt.Response!;
     }
 
     private void Add()
     {
-        TitlePopUp = "Agregar Tipo Alumno";
+        TitlePopUp = "Agregar Tipo Alumn@";
         studentType = new();
-        ShowPopUp = true;
+        parameters["Model"] = studentType;
+        PopUpComponent.Show();
     }
 
     private async Task EditAsync(int Id)
     {
-        TitlePopUp = "Modificar Alumn@";
+        TitlePopUp = "Modificar Tipo Alumn@";
 
 
         var responseHttp = await repository.Get<StudentType>($"/{ApiBase}/{Id}");
@@ -133,18 +132,19 @@
         else
         {
             studentType = responseHttp.Response!;
-            ShowPopUp = true;
+            parameters["Model"] = studentType;
+            PopUpComponent.Show();
         }
 
     }
 
-    private async Task OnValidSubmit()
+    private void OnValidSubmit()
     {
 
         if (studentType?.Id > 0)
-            await Edit();
+            Edit();
         else
-            await Create();
+            Create();
 
     }
 
@@ -206,8 +206,8 @@
 
     private async Task Return()
     {
+        PopUpComponent.Hiden();
         await LoadAsync();
-        ShowPopUp = false;
     }
 
     #region DataGrid

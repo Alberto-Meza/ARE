@@ -6,7 +6,7 @@
 
 
 
-<GenericList ShowPopUp="ShowPopUp"
+<GenericList 
              TitleCatalogo="Estudiantes"
              IconTitle="oi oi-box"
              MyList="Students"
@@ -16,8 +16,7 @@
              SelectedPage="SelectedPage"
              ApplyFilterAsync="ApplyFilterAsync"
              CleanFilterAsync="CleanFilterAsync"
-             AddAsync="Add"
-             TitlePopUp="@TitlePopUp">
+             AddAsync="Add">
 
 
 
@@ -63,32 +62,35 @@
 
     </Body>
 
-    <PopUpAddEdit>
-        
-            <StudentForm @ref="studentForm" Title="@TitlePopUp" Student="student" OnValidSubmit="OnValidSubmit" ReturnAction="Return"
-                         selected="selected" nonSelected="nonSelected" />
-        
-    </PopUpAddEdit>
+    
 </GenericList>
+
+<CascadingValue Value="helperActions">
+    <PopUpByComponent @ref="PopUpComponent" IconTitle="oi oi-box" TitlePopUp="@TitlePopUp"
+                      Tipo="typeof(StudentForm)" parameters="parameters" Modelo="model"></PopUpByComponent>
+</CascadingValue>
 
 
 
 @code {
 
-
+    public string ApiBase = "api/students";
     public List<Student>? Students { get; set; }
     private int currentPage = 1;
     private int totalPages;
     private bool ShowPopUp = false;
-    public string TitlePopUp = null!;
-    private Student student = new();
-    private StudentForm? studentForm;
+    private Student model = new();
     public List<StudentType> lstStudentType = new();
-    //public List<StudentType> SelectedStudentTypes { get; set; } = new();
-    //public List<StudentType> NonSelectedStudentTypes { get; set; } = new();
     private List<MultipleSelectorModel> selected { get; set; } = new();
     private List<MultipleSelectorModel> nonSelected { get; set; } = new();
     private List<int> selectedTypes { get; set; } = new();
+
+
+    public string TitlePopUp = null!;
+    public IDictionary<string, object> parameters { get; set; } = new Dictionary<string, object>();
+    HelperActions helperActions = new HelperActions();
+    private PopUpByComponent<Student> PopUpComponent;
+
 
 
     [Parameter]
@@ -102,6 +104,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        helperActions.Action = OnValidSubmit;
+        parameters.Add("Model", model);
+        parameters.Add("selected", selected);
+        parameters.Add("nonSelected", nonSelected);
         await LoadAsync();
     }
 
@@ -113,15 +119,15 @@
             page = Convert.ToInt32(Page);
         }
 
-        string url1 = $"api/students/GetAll?page={page}&filter={Filter}";
-        string url2 = $"api/students/totalPages?&filter={Filter}";
+        string url1 = $"{ApiBase}/GetAll?page={page}&filter={Filter}";
+        string url2 = $"{ApiBase}/totalPages?&filter={Filter}";
 
         var responseHppt = await repository.Get<List<Student>>(url1);
         var responseHppt2 = await repository.Get<int>(url2);
         Students = responseHppt.Response!;
         totalPages = responseHppt2.Response!;
 
-
+        StateHasChanged();
 
         //var responseHppt = await repository.GetAsync<List<Country>>("api/countries/GetAll");
         //Countries = responseHppt.Response!;
@@ -130,10 +136,13 @@
     private void Add()
     {
         TitlePopUp = "Agregar Alumn@";
-        student = new();
+        model = new();
         selected = new List<MultipleSelectorModel>();// SelectedStudentTypes.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
         nonSelected = lstStudentType.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
-        ShowPopUp = true;
+        parameters["Model"] = model;
+        parameters["selected"] = selected;
+        parameters["nonSelected"] = nonSelected;
+        PopUpComponent.Show();
     }
 
     private async Task EditAsync(int Id)
@@ -141,7 +150,7 @@
         TitlePopUp = "Modificar Alumn@";
 
 
-        var responseHttp = await repository.Get<Student>($"/api/students/{Id}");
+        var responseHttp = await repository.Get<Student>($"{ApiBase}/{Id}");
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
@@ -150,38 +159,37 @@
         }
         else
         {
-            student = responseHttp.Response!;
-            List<int> lstIds = student.StudentTypeRelationships!.Select(x => x.StudentTypeId).ToList();
+            model = responseHttp.Response!;
+            List<int> lstIds = model.StudentTypeRelationships!.Select(x => x.StudentTypeId).ToList();
 
             selected = lstStudentType.Where(x => lstIds.Contains(x.Id)).ToList().Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
             nonSelected = lstStudentType.Where(x => !lstIds.Contains(x.Id)).ToList().Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
 
-            ShowPopUp = true;
+            parameters["Model"] = model;
+            parameters["selected"] = selected;
+            parameters["nonSelected"] = nonSelected;
+            PopUpComponent.Show();
         }
 
     }
 
-    private async Task OnValidSubmit()
+    private void OnValidSubmit()
     {
 
         selectedTypes = selected.Select(x => int.Parse(x.Key)).ToList();
 
-        if (student?.Id > 0)
-            await Edit();
+        if (model?.Id > 0)
+            Edit();
         else
-            await Create();
+            Create();
 
     }
 
     private async Task Create()
     {
-        StudentDTO entity = new StudentDTO(student, selectedTypes);
-        //entity.StudentTypeRelationships = new List<StudentTypeRelationship>();
+        StudentDTO entity = new StudentDTO(model, selectedTypes);
 
-       //StudentDTO entity = new StudentDTO() { Name = "tes", LastName1 = "las", LastName2 = "jdjf", Gender = "F", BirthDate = DateTime.Now, BirthPlace = "dsf", Observation = "sddasd", FirstDateAppointment = DateTime.Now
-       // , IsActive = true, Street = "asdasd"};
-
-        var httpResponse = await repository.Post("/api/students/CreateStudent", entity);
+        var httpResponse = await repository.Post($"{ApiBase}/CreateStudent", entity);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -196,8 +204,8 @@
 
     private async Task Edit()
     {
-        student.City = null;
-        var responseHttp = await repository.Put("/api/students", student);
+        model.City = null;
+        var responseHttp = await repository.Put(ApiBase, model);
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
@@ -206,8 +214,6 @@
         }
 
         await Return();
-
-
         JS.ShowToast("Se modifico correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
 
     }
@@ -220,7 +226,7 @@
             return;
         }
 
-        var responseHTTP = await repository.Delete($"api/students/{Id}");
+        var responseHTTP = await repository.Delete($"{ApiBase}/{Id}");
 
         if (responseHTTP.Error)
         {
@@ -238,8 +244,8 @@
 
     private async Task Return()
     {
+        PopUpComponent.Hiden();
         await LoadAsync();
-        ShowPopUp = false;
     }
 
     private async Task LoadStudentTypes()
@@ -256,8 +262,6 @@
 
         lstStudentType = responseHttp.Response.ToList().Select(x => new StudentType() { Id = int.Parse(x.Value), Name = x.Text }).ToList();
 
-        //NonSelectedStudentTypes = responseHttp.Response.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList(); ;
-        //loading = false;
     }
 
     #region DataGrid

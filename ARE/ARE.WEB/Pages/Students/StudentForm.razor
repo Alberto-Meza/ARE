@@ -2,30 +2,13 @@
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
-<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
-
-<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-
-
-    <div>
-        
-        <div class="card-body">
-
-            <div class="row align-items-center">
-                <div class="col-6">
-                </div>
-                <div class="col-6">
-                </div>
-            </div>
-
             <div class="row align-items-center">
                 <div class="col-6">
                     <div class="mb-3">
                         <label>Nombre:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.Name" />
-                            <ValidationMessage For="@(() => Student.Name)" />
+                            <InputText class="form-control" @bind-Value="@Model.Name" />
+                            <ValidationMessage For="@(() => Model.Name)" />
                         </div>
                     </div>
                 </div>
@@ -33,8 +16,8 @@
                     <div class="mb-3">
                         <label>Apellido Paterno:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.LastName1" />
-                            <ValidationMessage For="@(() => Student.LastName1)" />
+                            <InputText class="form-control" @bind-Value="@Model.LastName1" />
+                            <ValidationMessage For="@(() => Model.LastName1)" />
                         </div>
                     </div>
                 </div>
@@ -45,8 +28,8 @@
                     <div class="mb-3">
                         <label>Apellido Materno:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.LastName2" />
-                            <ValidationMessage For="@(() => Student.LastName2)" />
+                            <InputText class="form-control" @bind-Value="@Model.LastName2" />
+                            <ValidationMessage For="@(() => Model.LastName2)" />
                         </div>
                     </div>
                 </div>
@@ -54,7 +37,7 @@
                     <div class="mb-3">
                         <label>Genero:</label>
                         <div>
-                            <select class="form-select" @bind="Student.Gender">
+                            <select class="form-select" @bind="Model.Gender">
                                 @if (genders is not null)
                                 {
                                     @foreach (var item in genders)
@@ -73,8 +56,8 @@
                     <div class="mb-3">
                         <label>Fecha Nacimiento:</label>
                         <div>
-                            <InputDate class="form-control" @bind-Value="@Student.BirthDate" DisplayName="Production Date" />
-                            <ValidationMessage For="@(() => Student.BirthDate)" />
+                            <InputDate class="form-control" @bind-Value="@Model.BirthDate" DisplayName="Production Date" />
+                            <ValidationMessage For="@(() => Model.BirthDate)" />
                         </div>
                     </div>
                 </div>
@@ -82,8 +65,8 @@
                     <div class="mb-3">
                         <label>Lugar de nacimiento:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.BirthPlace" />
-                            <ValidationMessage For="@(() => Student.BirthPlace)" />
+                            <InputText class="form-control" @bind-Value="@Model.BirthPlace" />
+                            <ValidationMessage For="@(() => Model.BirthPlace)" />
                         </div>
                     </div>
                 </div>
@@ -95,8 +78,8 @@
                     <div class="mb-3">
                         <div class="form-check form-switch">
                             <label class="form-check-label">Asma?:</label>
-                            <InputCheckbox class="form-check-input" @bind-Value="@Student.Asthma" />
-                            <ValidationMessage For="@(() => Student.Asthma)" />
+                            <InputCheckbox class="form-check-input" @bind-Value="@Model.Asthma" />
+                            <ValidationMessage For="@(() => Model.Asthma)" />
                         </div>
                     </div>
                 </div>
@@ -105,8 +88,8 @@
 
                         <div class="form-check form-switch">
                             <label class="form-check-label">Combulsion?:</label>
-                            <InputCheckbox class="form-check-input" @bind-Value="@Student.Convulsions" />
-                            <ValidationMessage For="@(() => Student.Convulsions)" />
+                            <InputCheckbox class="form-check-input" @bind-Value="@Model.Convulsions" />
+                            <ValidationMessage For="@(() => Model.Convulsions)" />
                         </div>
                     </div>
                 </div>
@@ -117,8 +100,8 @@
                     <div class="mb-3">
                         <label>Otras condiciones:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.OtherConditions" />
-                            <ValidationMessage For="@(() => Student.OtherConditions)" />
+                            <InputText class="form-control" @bind-Value="@Model.OtherConditions" />
+                            <ValidationMessage For="@(() => Model.OtherConditions)" />
                         </div>
                     </div>
                 </div>
@@ -126,8 +109,8 @@
                     <div class="mb-3">
                         <label>Alergias:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.Allergies" />
-                            <ValidationMessage For="@(() => Student.Allergies)" />
+                            <InputText class="form-control" @bind-Value="@Model.Allergies" />
+                            <ValidationMessage For="@(() => Model.Allergies)" />
                         </div>
                     </div>
                 </div>
@@ -138,8 +121,8 @@
                     <div class="mb-3">
                         <label>Enfermedades:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.Diseases" />
-                            <ValidationMessage For="@(() => Student.Diseases)" />
+                            <InputText class="form-control" @bind-Value="@Model.Diseases" />
+                            <ValidationMessage For="@(() => Model.Diseases)" />
                         </div>
                     </div>
                 </div>
@@ -147,8 +130,8 @@
                     <div class="mb-3">
                         <label>Medicinas:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.Medicines" />
-                            <ValidationMessage For="@(() => Student.Medicines)" />
+                            <InputText class="form-control" @bind-Value="@Model.Medicines" />
+                            <ValidationMessage For="@(() => Model.Medicines)" />
                         </div>
                     </div>
                 </div>
@@ -159,8 +142,8 @@
                     <div class="mb-3">
                         <label>Observaciones:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.Observation" />
-                            <ValidationMessage For="@(() => Student.Observation)" />
+                            <InputText class="form-control" @bind-Value="@Model.Observation" />
+                            <ValidationMessage For="@(() => Model.Observation)" />
                         </div>
                     </div>
                 </div>
@@ -168,8 +151,8 @@
                     <div class="mb-3">
                         <label>Fecha Entrada:</label>
                         <div>
-                            <InputDate class="form-control" @bind-Value="@Student.FirstDateAppointment" />
-                            <ValidationMessage For="@(() => Student.FirstDateAppointment)" />
+                            <InputDate class="form-control" @bind-Value="@Model.FirstDateAppointment" />
+                            <ValidationMessage For="@(() => Model.FirstDateAppointment)" />
                         </div>
                     </div>
                 </div>
@@ -180,8 +163,8 @@
                     <div class="mb-3">
                         <div class="form-check form-switch">
                             <label class="form-check-label">Activo:</label>
-                            <InputCheckbox class="form-check-input" @bind-Value="@Student.IsActive" />
-                            <ValidationMessage For="@(() => Student.IsActive)" />
+                            <InputCheckbox class="form-check-input" @bind-Value="@Model.IsActive" />
+                            <ValidationMessage For="@(() => Model.IsActive)" />
                         </div>
                     </div>
                 </div>
@@ -241,7 +224,7 @@
                     <div class="mb-3">
                         <label>Ciudad:</label>
                         <div>
-                            <select class="form-select" @bind="Student.CityId">
+                            <select class="form-select" @bind="Model.CityId">
                                 @if (cities is not null)
                                 {
                                     @foreach (var item in cities)
@@ -260,8 +243,8 @@
                     <div class="mb-3">
                         <label>Calle:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.Street" />
-                            <ValidationMessage For="@(() => Student.Street)" />
+                            <InputText class="form-control" @bind-Value="@Model.Street" />
+                            <ValidationMessage For="@(() => Model.Street)" />
                         </div>
                     </div>
                 </div>
@@ -269,8 +252,8 @@
                     <div class="mb-3">
                         <label>Nro:</label>
                         <div>
-                            <InputNumber class="form-control" @bind-Value="@Student.Number" />
-                            <ValidationMessage For="@(() => Student.Number)" />
+                            <InputNumber class="form-control" @bind-Value="@Model.Number" />
+                            <ValidationMessage For="@(() => Model.Number)" />
                         </div>
                     </div>
                 </div>
@@ -281,8 +264,8 @@
                     <div class="mb-3">
                         <label>Colonia:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.Suburb" />
-                            <ValidationMessage For="@(() => Student.Suburb)" />
+                            <InputText class="form-control" @bind-Value="@Model.Suburb" />
+                            <ValidationMessage For="@(() => Model.Suburb)" />
                         </div>
                     </div>
                 </div>
@@ -290,8 +273,8 @@
                     <div class="mb-3">
                         <label>Codigo Postal:</label>
                         <div>
-                            <InputText class="form-control" @bind-Value="@Student.ZipCode" />
-                            <ValidationMessage For="@(() => Student.ZipCode)" />
+                            <InputText class="form-control" @bind-Value="@Model.ZipCode" />
+                            <ValidationMessage For="@(() => Model.ZipCode)" />
                         </div>
                     </div>
                 </div>
@@ -302,7 +285,7 @@
                     <div class="mb-3">
                         <label>Tipo Sangineo:</label>
                         <div>
-                            <select class="form-select" @bind="Student.BloodTypeId">
+                            <select class="form-select" @bind="Model.BloodTypeId">
                                 @if (bloodTypes is not null)
                                 {
                                     @foreach (var item in bloodTypes)
@@ -318,7 +301,7 @@
                     <div class="mb-3">
                         <label>Estado Civil:</label>
                         <div>
-                            <select class="form-select" @bind="Student.CivilStatusId">
+                            <select class="form-select" @bind="Model.CivilStatusId">
                                 @if (civilStatus is not null)
                                 {
                                     @foreach (var item in civilStatus)
@@ -337,7 +320,7 @@
                     <div class="mb-3">
                         <label>Grado Escolar:</label>
                         <div>
-                            <select class="form-select" @bind="Student.SchoolGradeId">
+                            <select class="form-select" @bind="Model.SchoolGradeId">
                                 @if (schoolGrades is not null)
                                 {
                                     @foreach (var item in schoolGrades)
@@ -366,14 +349,6 @@
             </div>
 
 
-        </div>
-        <div class="card-footer">
-            <button class="btn btn-primary" type="submit">Guardar Cambios</button>
-            <button class="btn btn-success" type="button" @onclick="ReturnAction">Regresar</button>
-        </div>
-    </div>
-
-</EditForm>
 
 @code {
     private EditContext editContext = null!;
@@ -407,7 +382,7 @@
 
     [Parameter]
     [EditorRequired]
-    public Student Student{ get; set; } = new Student();
+    public Student Model{ get; set; } = new Student();
 
     [Parameter]
     [EditorRequired]
@@ -421,15 +396,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        editContext = new(Student);
+        editContext = new(Model);
 
 
 
 
-        if (Student.Id > 0)
+        if (Model.Id > 0 && Model.City != null)
         {
-            CountrySelected = Student.City.State.CountryId.ToString();
-            StateSelected = Student.City.StateId.ToString();
+            CountrySelected = Model.City.State.CountryId.ToString();
+            StateSelected = Model.City.StateId.ToString();
         }
         else
         {
@@ -437,16 +412,16 @@
             StateSelected = "0";
         }
 
-        //selected = SelectedStudentTypes.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
+        //selected = SelectedModelTypes.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
         //nonSelected = NonSelectedStudentTypes.Select(x => new MultipleSelectorModel(x.Id.ToString(), x.Name)).ToList();
 
 
         await InitCombos();
 
-        if (!string.IsNullOrEmpty(Student.PhotoPath))
+        if (!string.IsNullOrEmpty(Model.PhotoPath))
         {
-            imageUrl = Student.PhotoPath;
-            Student.PhotoPath = null;
+            imageUrl = Model.PhotoPath;
+            Model.PhotoPath = null;
         }
 
     }
@@ -617,7 +592,7 @@
 
     private void ImageSelected(string imagenBase64)
     {
-        Student.PhotoPath = imagenBase64;
+        Model.PhotoPath = imagenBase64;
         imageUrl = null;
     }
 

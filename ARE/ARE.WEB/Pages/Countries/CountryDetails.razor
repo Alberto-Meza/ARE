@@ -2,12 +2,11 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService Alert
+@inject IJSRuntime JS
+@using ARE.WEB.Pages.States;
 
 
-
-
-<GenericList ShowPopUp="ShowPopUp"
-             TitleCatalogo="Estados"
+<GenericList TitleCatalogo="Estados"
              IconTitle="oi oi-globe"
              MyList="states"
              Filter=@Filter
@@ -54,27 +53,32 @@
         </table>
     </Body>
 
-    <PopUpAddEdit>
 
-        <StateForm @ref="stateForm" Title="@TitlePopUp" State="state" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
-
-    </PopUpAddEdit>
 </GenericList>
 
 
+<CascadingValue Value="helperActions">
+    <PopUpByComponent @ref="PopUpComponent" IconTitle="oi oi-box" TitlePopUp="@TitlePopUp"
+                      Tipo="typeof(StateForm)" parameters="parameters" Modelo="model"></PopUpByComponent>
+</CascadingValue>
 
 
 @code {
+    public string ApiBase = "api/states";
     private Country? country;
     private List<State>? states;
     private int currentPage = 1;
     private int totalPages;
-    private bool ShowPopUp = false;
+
+
+    private State model { get; set; } = new();
+
     public string TitlePopUp = null!;
+    public IDictionary<string, object> parameters { get; set; } = new Dictionary<string, object>();
+    HelperActions helperActions = new HelperActions();
+    private PopUpByComponent<State> PopUpComponent;
 
 
-    private State? state;
-    private StateForm? stateForm;
 
     [Parameter]
     public int CountryId { get; set; }
@@ -91,6 +95,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        helperActions.Action = OnValidSubmit;
+        parameters.Add("Model", model);
         await LoadAsync();
     }
 
@@ -102,8 +108,8 @@
         }
 
 
-        string url1 = $"api/states/ByCountryId?id={CountryId}&page={page}&filter={Filter}";
-        string url2 = $"api/states/totalPages?id={CountryId}&filter={Filter}";
+        string url1 = $"{ApiBase}/ByCountryId?id={CountryId}&page={page}&filter={Filter}";
+        string url2 = $"{ApiBase}/totalPages?id={CountryId}&filter={Filter}";
         var responseHppt = await repository.Get<Country>($"api/countries/{CountryId}");
         var responseHppt2 = await repository.Get<List<State>>(url1);
         var responseHppt3 = await repository.Get<int>(url2);
@@ -111,56 +117,51 @@
         states = responseHppt2.Response;
         totalPages = responseHppt3.Response;
 
+        StateHasChanged();
     }
 
     private void Add()
     {
         TitlePopUp = "Agregar Estado";
-        state = new();
-        ShowPopUp = true;
+        model = new();
+        parameters["Model"] = model;
+        PopUpComponent.Show();
     }
 
     private async Task EditAsync(int StateId)
     {
         TitlePopUp = "Modificar Estado";
 
-
-        var responseHttp = await repository.Get<State>($"/api/states/{StateId}");
+        var responseHttp = await repository.Get<State>($"{ApiBase}/{StateId}");
         if (responseHttp.Error)
         {
-            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
-            {
-                navigationManager.NavigateTo("/countries");
-                return;
-            }
-
             var message = await responseHttp.GetErrorMessageAsync();
             await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
         }
         else
         {
-            state = responseHttp.Response;
-            ShowPopUp = true;
+            model = responseHttp.Response;
+            parameters["Model"] = model;
+            PopUpComponent.Show();
         }
 
     }
 
 
-    private async Task OnValidSubmit()
+    private void OnValidSubmit()
     {
 
-        if (state?.Id > 0)
-            await Edit();
+        if (model?.Id > 0)
+            Edit();
         else
-            await Create();
+            Create();
 
     }
 
     private async Task Create()
     {
-        state.CountryId = CountryId;
-        var httpResponse = await repository.Post("/api/states", state);
+        model.CountryId = CountryId;
+        var httpResponse = await repository.Post(ApiBase, model);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -169,11 +170,12 @@
         }
 
         await Return();
+        JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
     }
 
     private async Task Edit()
     {
-        var responseHttp = await repository.Put("/api/states", state);
+        var responseHttp = await repository.Put(ApiBase, model);
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
@@ -183,44 +185,34 @@
 
 
         await Return();
+        JS.ShowToast("Se modifico correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
     }
 
     private async Task DeleteAsync(int id)
     {
-        var result = await Alert.FireAsync(new SweetAlertOptions
-        {
-            Title = "Confirmación",
-            Text = "¿Realmente deseas eliminar el registro?",
-            Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Si"
-        });
-
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
+        if (!await JS.Confirm("Confirmación", "¿Esta seguro que quieres borrar el registro?", "SI", TypeAlert.question))
         {
             return;
         }
 
-        var responseHttp = await repository.Delete($"/api/states/{id}");
+        var responseHttp = await repository.Delete($"{ApiBase}/{id}");
         if (responseHttp.Error)
         {
-            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
-            {
-                var message = await responseHttp.GetErrorMessageAsync();
-                await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
-                return;
-            }
+            var mensajeError = await responseHttp.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await LoadAsync();
+            JS.ShowToast("Se elimino correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
         }
 
-        await LoadAsync();
     }
 
     private async Task Return()
     {
+        PopUpComponent.Hiden();
         await LoadAsync();
-        ShowPopUp = false;
     }
 
     #region DataGrid

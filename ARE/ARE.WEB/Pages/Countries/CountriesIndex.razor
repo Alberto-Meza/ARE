@@ -4,262 +4,237 @@
 @inject NavigationManager navigationManager
 @inject IJSRuntime JS
 
-    <GenericList ShowPopUp="ShowPopUp"
-                 TitleCatalogo="Paises"
-                 IconTitle="oi oi-globe"
-                 MyList="Countries"
-                 Filter=@Filter
-                 currentPage="currentPage"
-                 totalPages="totalPages"
-                 SelectedPage="SelectedPage"
-                 ApplyFilterAsync="ApplyFilterAsync"
-                 CleanFilterAsync="CleanFilterAsync"
-                 AddAsync="Add">
+<GenericList 
+             TitleCatalogo="Paises"
+             IconTitle="oi oi-globe"
+             MyList="Countries"
+             Filter=@Filter
+             currentPage="currentPage"
+             totalPages="totalPages"
+             SelectedPage="SelectedPage"
+             ApplyFilterAsync="ApplyFilterAsync"
+             CleanFilterAsync="CleanFilterAsync"
+             AddAsync="Add">
 
-        <Body>
-            <table class="table table-striped">
-                <thead>
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>País</th>
+                    <th style="width:220px">Estados</th>
+                    <th style="width:260px"></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var country in Countries!)
+                {
                     <tr>
-                        <th>País</th>
-                        <th style="width:220px">Estados</th>
-                        <th style="width:260px"></th>
-
+                        <td>
+                            @country.Name
+                        </td>
+                        <td>
+                            @country.StatesNumber
+                        </td>
+                        <td>
+                            <a href="/countries/details/@country.Id" class="btn btn-info">   <i class="oi oi-list" />    </a>
+                            <button class="btn btn-warning" @onclick=@(() => EditAsync(country.Id))>   <i class="oi oi-pencil" />   </button>
+                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(country.Id))>  <i class="oi oi-trash" />   </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var country in Countries!)
-                    {
-                        <tr>
-                            <td>
-                                @country.Name
-                            </td>
-                            <td>
-                                @country.StatesNumber
-                            </td>
-                            <td>
-                                <a href="/countries/details/@country.Id" class="btn btn-info">   <i class="oi oi-list" />    </a>
-                                <button class="btn btn-warning" @onclick=@(() => EditAsync(country.Id))>   <i class="oi oi-pencil" />   </button>
-                                <button class="btn btn-danger" @onclick=@(() => DeleteAsync(country.Id))>  <i class="oi oi-trash" />   </button>
-                            </td>
-                        </tr>
 
-                    }
-                </tbody>
-            </table>
-        </Body>
-
-
-        <PopUpAddEdit>
-
-            <CountryForm @ref="countryForm" Title="@TitlePopUp" Country="country" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
-           
-        </PopUpAddEdit>
-    </GenericList>
-
-
-
-
-    @code {
-
-        public Country country { get; set; } = new();
-        private CountryForm? countryForm;
-
-        public string TitlePopUp = null!;
-
-        public List<Country>? Countries { get; set; }
-        private int currentPage = 1;
-        private int totalPages;
-        private bool ShowPopUp = false;
-
-        [Parameter]
-        [SupplyParameterFromQuery]
-        public string Page { get; set; } = "";
-
-        [Parameter]
-        [SupplyParameterFromQuery]
-        public string Filter { get; set; } = "";
-
-
-        protected override async Task OnInitializedAsync()
-        {
-            await LoadAsync();
-        }
-
-
-        private async Task LoadAsync(int page = 1)
-        {
-
-            if (!string.IsNullOrWhiteSpace(Page))
-            {
-                page = Convert.ToInt32(Page);
-            }
-
-            string url1 = $"api/countries/GetAll?page={page}&filter={Filter}";
-            string url2 = $"api/countries/totalPages?&filter={Filter}";
-
-            try
-            {
-                var responseHppt = await repository.Get<List<Country>>(url1);
-                var responseHppt2 = await repository.Get<int>(url2);
-                Countries = responseHppt.Response!;
-                totalPages = responseHppt2.Response!;
-
-            }
-            catch (Exception ex)
-            {
-                await Alert.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
-            }
-
-
-            //var responseHppt = await repository.GetAsync<List<Country>>("api/countries/GetAll");
-            //Countries = responseHppt.Response!;
-        }
-
-        private void Add()
-        {
-            TitlePopUp = "Agregar Pais";
-            country = new();
-            ShowPopUp = true;
-        }
-
-        private async Task EditAsync(int IdCountry)
-        {
-            TitlePopUp = "Modificar Pais";
-            var responseHTTP = await repository.Get<Country>($"api/countries/{IdCountry}");
-
-            if (responseHTTP.Error)
-            {
-                if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    navigationManager.NavigateTo("countries");
                 }
-                else
-                {
-                    var messageError = await responseHTTP.GetErrorMessageAsync();
-                    await Alert.FireAsync("Error", messageError, SweetAlertIcon.Error);
-                }
-            }
-            else
-            {
-                country = responseHTTP.Response!;
-                ShowPopUp = true;
-            }
+            </tbody>
+        </table>
+    </Body>
 
-        }
 
+  
+</GenericList>
+
+<CascadingValue Value="helperActions">
+    <PopUpByComponent @ref="PopUpComponent" IconTitle="oi oi-box" TitlePopUp="@TitlePopUp"
+                      Tipo="typeof(CountryForm)" parameters="parameters" Modelo="model"></PopUpByComponent>
+</CascadingValue>
 
 
 
-
-        private async Task OnValidSubmit()
-        {
-
-            if (country.Id > 0)
-                await Edit();
-            else
-                await Create();
-
-        }
-
-        private async Task Create()
-        {
-            var responseHttp = await repository.Post("/api/countries", country);
-            if (responseHttp.Error)
-            {
-                var message = await responseHttp.GetErrorMessageAsync();
-                await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
-                return;
-            }
+@code {
+    public string ApiBase = "api/countries";
+    public Country model { get; set; } = new();
+    public List<Country>? Countries { get; set; }
+    private int currentPage = 1;
+    private int totalPages;
 
 
-            await Return();
-        }
-
-        private async Task Edit()
-        {
-            var responseHTTP = await repository.Put("api/countries", country);
-
-            if (responseHTTP.Error)
-            {
-                var mensajeError = await responseHTTP.GetErrorMessageAsync();
-                await Alert.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-                return;
-            }
-
-            await Return();
-        }
-
-        private async Task DeleteAsync(int Id)
-        {
-            var result = await Alert.FireAsync(new SweetAlertOptions
-            {
-                Title = "Confirmación",
-                Text = "¿Esta seguro que quieres borrar el registro?",
-                Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
-                CancelButtonText = "No",
-                ConfirmButtonText = "Si"
-            });
-
-            var confirm = string.IsNullOrEmpty(result.Value);
-
-            if (confirm)
-            {
-                return;
-            }
+    public string TitlePopUp = null!;
+    public IDictionary<string, object> parameters { get; set; } = new Dictionary<string, object>();
+    HelperActions helperActions = new HelperActions();
+    private PopUpByComponent<Country> PopUpComponent;
 
 
-            var responseHTTP = await repository.Delete($"api/countries/{Id}");
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = "";
 
-            if (responseHTTP.Error)
-            {
-                if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    navigationManager.NavigateTo("/");
-                }
-                else
-                {
-                    var mensajeError = await responseHTTP.GetErrorMessageAsync();
-                    await Alert.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
-                }
-            }
-            else
-            {
-                await LoadAsync();
-            }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = "";
 
 
-        }
-
-        private async Task Return()
-        {
-            await LoadAsync();
-            ShowPopUp = false;
-        }
-
-        #region DataGrid
-
-        private async Task SelectedPage(int page)
-        {
-            currentPage = page;
-            await LoadAsync(page);
-        }
-
-        private async Task CleanFilterAsync()
-        {
-            Filter = string.Empty;
-            await ApplyFilterAsync("");
-        }
-
-        private async Task ApplyFilterAsync(string filter)
-        {
-            Filter = filter;
-            int page = 1;
-            //await LoadAsync(page);
-            await SelectedPage(page);
-        }
-
-
-        #endregion
+    protected override async Task OnInitializedAsync()
+    {
+        helperActions.Action = OnValidSubmit;
+        parameters.Add("Model", model);
+        await LoadAsync();
     }
+
+    private async Task LoadAsync(int page = 1)
+    {
+
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+
+        string url1 = $"{ApiBase}/GetAll?page={page}&filter={Filter}";
+        string url2 = $"{ApiBase}/totalPages?&filter={Filter}";
+
+        try
+        {
+            var responseHppt = await repository.Get<List<Country>>(url1);
+            var responseHppt2 = await repository.Get<int>(url2);
+            Countries = responseHppt.Response!;
+            totalPages = responseHppt2.Response!;
+
+        }
+        catch (Exception ex)
+        {
+            await Alert.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+
+        StateHasChanged();
+    }
+
+    private void Add()
+    {
+        TitlePopUp = "Agregar Pais";
+        model = new();
+        parameters["Model"] = model;
+        PopUpComponent.Show();
+    }
+
+    private async Task EditAsync(int IdCountry)
+    {
+        TitlePopUp = "Modificar Pais";
+        var responseHTTP = await repository.Get<Country>($"{ApiBase}/{IdCountry}");
+
+        if (responseHTTP.Error)
+        {
+            var messageError = await responseHTTP.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", messageError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            model = responseHTTP.Response!;
+            parameters["Model"] = model;
+            PopUpComponent.Show();
+        }
+
+    }
+
+    private void OnValidSubmit()
+    {
+
+        if (model.Id > 0)
+            Edit();
+        else
+            Create();
+
+    }
+
+    private async Task Create()
+    {
+        var responseHttp = await repository.Post($"/{ApiBase}", model);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+
+        await Return();
+        JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+    }
+
+    private async Task Edit()
+    {
+        var responseHTTP = await repository.Put(ApiBase, model);
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            return;
+        }
+
+        await Return();
+        JS.ShowToast("Se modifico correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+    }
+
+    private async Task DeleteAsync(int Id)
+    {
+        if (!await JS.Confirm("Confirmación", "¿Esta seguro que quieres borrar el registro?", "SI", TypeAlert.question))
+        {
+            return;
+        }
+
+        var responseHTTP = await repository.Delete($"{ApiBase}/{Id}");
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await LoadAsync();
+            JS.ShowToast("Se elimino correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+        }
+
+
+    }
+
+    private async Task Return()
+    {
+        PopUpComponent.Hiden();
+        await LoadAsync();
+    }
+
+    #region DataGrid
+
+    private async Task SelectedPage(int page)
+    {
+        currentPage = page;
+        await LoadAsync(page);
+    }
+
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync("");
+    }
+
+    private async Task ApplyFilterAsync(string filter)
+    {
+        Filter = filter;
+        int page = 1;
+        //await LoadAsync(page);
+        await SelectedPage(page);
+    }
+
+
+    #endregion
+}
 

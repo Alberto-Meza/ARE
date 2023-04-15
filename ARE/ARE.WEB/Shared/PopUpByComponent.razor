@@ -1,0 +1,92 @@
+﻿@typeparam Titem
+
+@if (ShowPopUp)
+{
+    <EditForm Model="Modelo" OnSubmit="OnSubmit" >
+        <DataAnnotationsValidator />
+        <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);"
+             aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content card">
+                    <div class="modal-header">
+                        <h5 class="modal-title"> <i class=@IconTitle></i> @TitlePopUp </h5>
+
+                        <button class="btn-close" type="button" @onclick="Hiden"></button>
+                    </div>
+                    <div class="modal-body">
+                        <DynamicComponent Type="Tipo" Parameters="parameters" />
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+                        <button class="btn btn-success" type="button" @onclick="Hiden">Regresar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+
+    [Parameter] public Type Tipo { get; set; } = null!;
+    [Parameter] public IDictionary<string, object> parameters { get; set; } = new Dictionary<string, object>();
+    [Parameter] public string TitlePopUp { get; set; } = string.Empty;
+    [Parameter] public string IconTitle { get; set; } = string.Empty;
+
+    private bool ShowPopUp { get; set; } = false;
+
+    [CascadingParameter] public HelperActions helperActions { get; set; }
+
+    public EditContext editContext { get; set; } = null!;
+
+    //public EditContext editContext2 = null!;
+    //public BranchOffice BranchOffice { get; set; } = new BranchOffice();
+    [Parameter]
+    public Titem Modelo { get; set; }
+
+    protected override void OnInitialized()
+    {
+        //var feditContext2 = parameters.Where(x => x.Key == "editContext").FirstOrDefault().Value;
+        editContext = new(Modelo);
+        //_Modelo = Modelo;
+        //parameters.Add("Model", Modelo);
+
+        //editContext = new(parameters.Where(x => x.Key == "Model").FirstOrDefault().Value);
+
+        //editContext2 = new(BranchOffice);
+        //base.OnInitialized();
+    }
+
+
+    protected async override Task OnParametersSetAsync()
+    {
+
+    }
+
+    private void OnSubmit(EditContext editContext)
+    {
+        bool formIsValid = editContext.Validate();
+        if (formIsValid)
+            helperActions.Action?.Invoke();
+    }
+
+    private void OnInvalidSubmit()
+    {
+
+
+    }
+
+    public void Show()
+    {
+        ShowPopUp = true;
+    }
+
+    public void Hiden()
+    {
+        ShowPopUp = false;
+    }
+
+}
+

@@ -29,7 +29,7 @@ else
                         <FilterHeader Filter=@Filter ApplyFilterAsync=ApplyFilterAsync CleanFilterAsync=CleanFilterAsync />
                     </div>
                     <div class="col-2">
-                       
+
                         <button class="btn btn-sm btn-primary float-end" @onclick=@(() => Add())><i class="oi oi-plus"></i> Agreagar </button>
                     </div>
                 </div>
@@ -53,38 +53,14 @@ else
         </div>
     </div>
 
-    @if (ShowPopUp)
-    {
-
-            <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);"
-                 aria-modal="true" role="dialog">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
-                    <div class="modal-content card">
-                        <div class="modal-header" >
-                            <h5 class="modal-title"> <i class=@IconTitle></i> @TitlePopUp </h5>
-
-                                   <button class="btn-close" type="button" @onclick="ReturnAction"></button>
-                        </div>
-                        <div class="modal-body">
-
-                            @PopUpAddEdit
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-    }
+   
 
 }
 
 
+
 @code {
 
-
-    [Parameter] public bool ShowPopUp { get; set; } = false;
-
-    [Parameter]
-    public RenderFragment? PopUpAddEdit { get; set; }
 
     [Parameter]
     public RenderFragment? BtnBackPage { get; set; }
@@ -139,9 +115,6 @@ else
         await AddAsync.InvokeAsync();
     }
 
-    private void ReturnAction()
-    {
-        ShowPopUp = false;
-    }
+   
 
 }

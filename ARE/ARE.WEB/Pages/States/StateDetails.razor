@@ -2,12 +2,11 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-@using ARE.WEB.Pages.Cities
+@inject IJSRuntime JS
+@using ARE.WEB.Pages.Cities;
 
 
-
-<GenericList ShowPopUp="ShowPopUp"
-             TitleCatalogo="Ciudades"
+<GenericList TitleCatalogo="Ciudades"
              IconTitle="oi oi-globe"
              MyList="cities"
              Filter=@Filter
@@ -51,26 +50,29 @@
 
     </Body>
 
-    <PopUpAddEdit>
-
-        <CityForm @ref="cityForm" Title="@TitlePopUp" City="city" OnValidSubmit="OnValidSubmit" ReturnAction="Return" />
-
-    </PopUpAddEdit>
 </GenericList>
 
 
+<CascadingValue Value="helperActions">
+    <PopUpByComponent @ref="PopUpComponent" IconTitle="oi oi-box" TitlePopUp="@TitlePopUp"
+                      Tipo="typeof(CityForm)" parameters="parameters" Modelo="model"></PopUpByComponent>
+</CascadingValue>
 
 @code {
+    public string ApiBase = "api/cities";
     private State? state;
     private List<City>? cities;
     private int currentPage = 1;
     private int totalPages;
-    private bool ShowPopUp = false;
-    public string TitlePopUp = null!;
     public int CountryId { get; set; }
 
-    private City city = new();
-    private CityForm? cityForm;
+    private City model = new();
+
+
+    public string TitlePopUp = null!;
+    public IDictionary<string, object> parameters { get; set; } = new Dictionary<string, object>();
+    HelperActions helperActions = new HelperActions();
+    private PopUpByComponent<City> PopUpComponent;
 
 
     [Parameter]
@@ -86,6 +88,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        helperActions.Action = OnValidSubmit;
+        parameters.Add("Model", model);
         await LoadAsync();
     }
 
@@ -96,8 +100,8 @@
             page = Convert.ToInt32(Page);
         }
 
-        string url1 = $"api/cities/ByStateId?id={StateId}&page={page}&filter={Filter}";
-        string url2 = $"api/cities/totalPages?id={StateId}&filter={Filter}";
+        string url1 = $"{ApiBase}/ByStateId?id={StateId}&page={page}&filter={Filter}";
+        string url2 = $"{ApiBase}/totalPages?id={StateId}&filter={Filter}";
         var responseHppt = await repository.Get<State>($"api/states/{StateId}");
         var responseHppt2 = await repository.Get<List<City>>(url1);
         var responseHppt3 = await repository.Get<int>(url2);
@@ -106,13 +110,16 @@
         totalPages = responseHppt3.Response;
 
         CountryId = state.CountryId!;
+
+        StateHasChanged();
     }
 
     private void Add()
     {
         TitlePopUp = "Agregar Ciudad";
-        city = new();
-        ShowPopUp = true;
+        model = new();
+        parameters["Model"] = model;
+        PopUpComponent.Show();
     }
 
     private async Task EditAsync(int CityId)
@@ -123,39 +130,33 @@
         var responseHttp = await repository.Get<City>($"/api/cities/{CityId}");
         if (responseHttp.Error)
         {
-            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
-            {
-                navigationManager.NavigateTo("/countries");
-                return;
-            }
-
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
         }
         else
         {
-            city = responseHttp.Response;
-            ShowPopUp = true;
+            model = responseHttp.Response;
+            parameters["Model"] = model;
+            PopUpComponent.Show();
         }
 
     }
 
 
-    private async Task OnValidSubmit()
+    private void OnValidSubmit()
     {
 
-        if (city?.Id > 0)
-            await Edit();
+        if (model?.Id > 0)
+            Edit();
         else
-            await Create();
+            Create();
 
     }
 
     private async Task Create()
     {
-        city.StateId = StateId;
-        var httpResponse = await repository.Post("/api/cities", city);
+        model.StateId = StateId;
+        var httpResponse = await repository.Post(ApiBase, model);
         if (httpResponse.Error)
         {
             var message = await httpResponse.GetErrorMessageAsync();
@@ -164,58 +165,47 @@
         }
 
         await Return();
+        JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
     }
 
     private async Task Edit()
     {
-        var responseHttp = await repository.Put("/api/cities", city);
+        var responseHttp = await repository.Put(ApiBase, model);
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-
-
         await Return();
+        JS.ShowToast("Se modifico correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
     }
 
     private async Task DeleteAsync(int cityId)
     {
-        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
-        {
-            Title = "Confirmación",
-            Text = "¿Realmente deseas eliminar el registro?",
-            Icon = SweetAlertIcon.Question,
-            ShowCancelButton = true,
-            CancelButtonText = "No",
-            ConfirmButtonText = "Si"
-        });
-
-        var confirm = string.IsNullOrEmpty(result.Value);
-        if (confirm)
+        if (!await JS.Confirm("Confirmación", "¿Esta seguro que quieres borrar el registro?", "SI", TypeAlert.question))
         {
             return;
         }
 
-        var responseHttp = await repository.Delete($"/api/cities/{cityId}");
+        var responseHttp = await repository.Delete($"{ApiBase}/{cityId}");
         if (responseHttp.Error)
         {
-            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
-            {
-                var message = await responseHttp.GetErrorMessageAsync();
-                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-                return;
-            }
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await LoadAsync();
+            JS.ShowToast("Se elimino correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
         }
 
-        await LoadAsync();
     }
 
     private async Task Return()
     {
+        PopUpComponent.Hiden();
         await LoadAsync();
-        ShowPopUp = false;
     }
 
 
