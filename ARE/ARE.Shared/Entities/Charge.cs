@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
+using ARE.Shared.Enums;
 
 namespace ARE.Shared.Entities
 {
@@ -23,7 +24,8 @@ namespace ARE.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Comment { get; set; } = null!;
 
-
+        [Display(Name = "Status")]
+        public ChargeStatusType Status { get; set; }
 
         #region Related Entities
 

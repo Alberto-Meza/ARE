@@ -35,6 +35,11 @@ namespace ARE.WEB.Repositories
             return new HttpResponseWrapper<object>(null, !responseHTTP.IsSuccessStatusCode, responseHTTP);
         }
 
+        public async Task<HttpResponseWrapper<object>> Post(string url)
+        {
+            var responseHttp = await _httpClient.PostAsync(url, null);
+            return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
 
         public async Task<HttpResponseWrapper<object>> Post<T>(string url, T model)
         {

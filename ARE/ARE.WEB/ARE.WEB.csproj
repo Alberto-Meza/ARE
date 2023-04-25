@@ -30,6 +30,12 @@
     <None Remove="Auth\" />
     <None Remove="Helpers\" />
     <None Remove="Pages\Students\" />
+    <None Remove="Pages\Departments\" />
+    <None Remove="Pages\Jobs\" />
+    <None Remove="Pages\Employees\" />
+    <None Remove="Pages\TypeOfCharges\" />
+    <None Remove="Pages\PaymentPeriods\" />
+    <None Remove="Pages\MethodOfPayments\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repositories\" />
@@ -42,6 +48,12 @@
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\Images\" />
     <Folder Include="Pages\Students\" />
+    <Folder Include="Pages\Departments\" />
+    <Folder Include="Pages\Jobs\" />
+    <Folder Include="Pages\Employees\" />
+    <Folder Include="Pages\TypeOfCharges\" />
+    <Folder Include="Pages\PaymentPeriods\" />
+    <Folder Include="Pages\MethodOfPayments\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARE.Shared\ARE.Shared.csproj">

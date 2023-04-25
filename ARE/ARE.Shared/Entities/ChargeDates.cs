@@ -17,9 +17,6 @@ namespace ARE.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public DateTime EndDate { get; set; }
 
-        [Display(Name = "Pendiente")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public bool IsPending { get; set; }
 
         #region Related Entities
 

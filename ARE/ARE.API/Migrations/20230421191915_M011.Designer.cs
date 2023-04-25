@@ -4,6 +4,7 @@ using ARE.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ARE.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230421191915_M011")]
+    partial class M011
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,24 +33,16 @@ namespace ARE.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ChargeId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ExitDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ChargeId");
 
                     b.HasIndex("StudentId");
 
@@ -154,9 +149,6 @@ namespace ARE.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
@@ -188,6 +180,9 @@ namespace ARE.API.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -537,22 +532,9 @@ namespace ARE.API.Migrations
                     b.Property<int>("AssistanceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("SubTypeOfChargeId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AssistanceId");
-
-                    b.HasIndex("SubTypeOfChargeId");
 
                     b.ToTable("PendingCharges");
                 });
@@ -1105,17 +1087,11 @@ namespace ARE.API.Migrations
 
             modelBuilder.Entity("ARE.Shared.Entities.Assistance", b =>
                 {
-                    b.HasOne("ARE.Shared.Entities.Charge", "Charge")
-                        .WithMany()
-                        .HasForeignKey("ChargeId");
-
                     b.HasOne("ARE.Shared.Entities.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Charge");
 
                     b.Navigation("Student");
                 });
@@ -1253,15 +1229,7 @@ namespace ARE.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ARE.Shared.Entities.SubTypeOfCharge", "SubTypeOfCharge")
-                        .WithMany()
-                        .HasForeignKey("SubTypeOfChargeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Assistance");
-
-                    b.Navigation("SubTypeOfCharge");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.State", b =>

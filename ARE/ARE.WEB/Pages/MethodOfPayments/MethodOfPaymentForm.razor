@@ -1,0 +1,22 @@
+﻿
+<div class="row align-items-center">
+    <div class="col-6">
+        <div class="mb-3">
+            <label>Nombre:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@Model.Name" />
+                <ValidationMessage For="@(() => Model.Name)" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+    [Parameter]
+    [EditorRequired]
+    public MethodOfPayment Model { get; set; } = null!;
+
+}

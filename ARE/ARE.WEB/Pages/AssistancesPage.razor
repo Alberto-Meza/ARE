@@ -1,0 +1,78 @@
+﻿@page "/assistances"
+@inject IRepository repository
+@inject SweetAlertService Alert
+@inject NavigationManager navigationManager
+@inject IJSRuntime JS
+
+
+<div class="row align-items-center">
+    <div class="col-6">
+        <div class="mb-3">
+            <label>Alumno:</label>
+            <div>
+                <select class="form-select" @bind="StudentID">
+                    @if (students is not null)
+                    {
+                        @foreach (var item in students)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="mb-3">
+            <button class="btn btn-warning" @onclick="Check"> <i class="oi oi-pencil" /> Checar </button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public string ApiBase = "api/assistances";
+    private List<ItemCombo>? students;
+    private int StudentID = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitCombos();
+    }
+
+    private async Task InitCombos()
+    {
+        await LoadStudentsAsync();
+    }
+
+    private async Task LoadStudentsAsync()
+    {
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=Students");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        students = responseHttp.Response;
+    }
+
+    private async Task Check()
+    {
+        Assistance Asis = new Assistance() { StudentId = StudentID, EntryDate = DateTime.Now };
+        var httpResponse = await repository.Post($"/{ApiBase}/Check", Asis);
+        //var httpResponse = await repository.Post($"/api/assistances/Check/?StudentID={StudentID}&Checada={DateTime.Now}");
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        //await Return();
+
+        JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+    }
+}
+

@@ -1,4 +1,5 @@
-﻿using ARE.API.Data;
+﻿using System;
+using ARE.API.Data;
 using ARE.API.Helpers;
 using ARE.Shared.DTOs;
 using ARE.Shared.Entities;
@@ -8,11 +9,12 @@ using Microsoft.EntityFrameworkCore;
 namespace ARE.API.Controllers
 {
     [ApiController]
-    [Route("/api/employeeTypes")]
-    public class EmployeeTypesControllers : GenericController<EmployeeType>
+    [Route("/api/typeOfCharges")]
+    public class TypeOfChargesController : GenericController<TypeOfCharge>
     {
         private readonly DataContext _context;
-        public EmployeeTypesControllers(DataContext context) : base(context)
+
+        public TypeOfChargesController(DataContext context) : base(context)
         {
             _context = context;
         }
@@ -21,11 +23,12 @@ namespace ARE.API.Controllers
         public virtual ActionResult GetAllAsync([FromQuery] PaginationDTO pagination)
         {
 
-            var queryable = _context.EmployeeTypes
+            var queryable = _context.TypeOfCharges
+                                    .Include(x=>x.SubTypeOfCharges)
                                     .AsQueryable();
 
 
-            return Ok(queryable.ContaintAll(pagination, new EmployeeType())
+            return Ok(queryable.ContaintAll(pagination, new TypeOfCharge())
                 .OrderBy(x => x.Name)
                 .Paginate(pagination)
                 .ToList());
@@ -35,9 +38,9 @@ namespace ARE.API.Controllers
         [HttpGet("totalPages")]
         public ActionResult GetPages([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _context.EmployeeTypes.AsQueryable();
+            var queryable = _context.TypeOfCharges.AsQueryable();
 
-            double count = queryable.ContaintAll(pagination, new EmployeeType()).Count();
+            double count = queryable.ContaintAll(pagination, new TypeOfCharge()).Count();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }

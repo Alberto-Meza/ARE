@@ -1,0 +1,227 @@
+﻿@page "/methodOfPayments"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@inject IJSRuntime JS
+
+
+<GenericList TitleCatalogo="Metodos de Pago"
+             IconTitle="oi oi-globe"
+             MyList="MethodOfPayments"
+             Filter=@Filter
+             currentPage="currentPage"
+             totalPages="totalPages"
+             SelectedPage="SelectedPage"
+             ApplyFilterAsync="ApplyFilterAsync"
+             CleanFilterAsync="CleanFilterAsync"
+             AddAsync="Add">
+
+    <Body>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Periodo</th>
+                    <th style="width:180px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in MethodOfPayments!)
+                {
+                    <tr>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            <button class="btn btn-warning" @onclick=@(() => EditAsync(item.Id))> <i class="oi oi-pencil" /> </button>
+                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(item.Id))> <i class="oi oi-trash" /> </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+    </Body>
+
+</GenericList>
+
+
+<CascadingValue Value="helperActions">
+    <PopUpByComponent @ref="PopUpComponent" IconTitle="oi oi-box" TitlePopUp="@TitlePopUp"
+                      Tipo="typeof(MethodOfPaymentForm)" parameters="parameters" Modelo="model"></PopUpByComponent>
+</CascadingValue>
+
+@code {
+    public string ApiBase = "api/methodOfPayments";
+    private List<MethodOfPayment>? MethodOfPayments;
+    private int currentPage = 1;
+    private int totalPages;
+    private PagFiltersDTO pagFiltersDTO = new();
+
+    private MethodOfPayment model = new();
+
+
+    public string TitlePopUp = null!;
+    public IDictionary<string, object> parameters { get; set; } = new Dictionary<string, object>();
+    HelperActions helperActions = new HelperActions();
+    private PopUpByComponent<MethodOfPayment> PopUpComponent;
+
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        helperActions.Action = OnValidSubmit;
+        parameters.Add("Model", model);
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync(int page = 1)
+    {
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+
+
+        pagFiltersDTO.Pagination.Filter = Filter;
+        var filters = new List<FilterDTO>();
+        pagFiltersDTO.Filters = filters;
+
+
+        string url1 = $"{ApiBase}/GetAll";
+        string url2 = $"{ApiBase}/totalPages";
+
+        var responseHppt2 = await repository.Post<PagFiltersDTO, List<MethodOfPayment>>(url1, pagFiltersDTO);
+        var responseHppt3 = await repository.Post<PagFiltersDTO, int>(url2, pagFiltersDTO);
+
+        MethodOfPayments = responseHppt2.Response;
+        totalPages = responseHppt3.Response;
+
+
+        StateHasChanged();
+    }
+
+    private void Add()
+    {
+        TitlePopUp = "Agregar Metodo de pago";
+        model = new();
+        parameters["Model"] = model;
+        PopUpComponent.Show();
+    }
+
+    private async Task EditAsync(int Id)
+    {
+        TitlePopUp = "Modificar Metodo de pago";
+
+
+        var responseHttp = await repository.Get<MethodOfPayment>($"{ApiBase}/{Id}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            model = responseHttp.Response;
+            parameters["Model"] = model;
+            PopUpComponent.Show();
+        }
+
+    }
+
+    private void OnValidSubmit()
+    {
+
+        if (model?.Id > 0)
+            Edit();
+        else
+            Create();
+
+    }
+
+    private async Task Create()
+    {
+        var httpResponse = await repository.Post(ApiBase, model);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await Return();
+        JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+    }
+
+    private async Task Edit()
+    {
+        var responseHttp = await repository.Put(ApiBase, model);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        await Return();
+        JS.ShowToast("Se modifico correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+    }
+
+    private async Task DeleteAsync(int cityId)
+    {
+        if (!await JS.Confirm("Confirmación", "¿Esta seguro que quieres borrar el registro?", "SI", TypeAlert.question))
+        {
+            return;
+        }
+
+        var responseHttp = await repository.Delete($"{ApiBase}/{cityId}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+        else
+        {
+            await LoadAsync();
+            JS.ShowToast("Se elimino correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+        }
+
+    }
+
+    private async Task Return()
+    {
+        PopUpComponent.Hiden();
+        await LoadAsync();
+    }
+
+
+    #region DataGrid
+
+    private async Task SelectedPage(int page)
+    {
+        currentPage = page;
+        await LoadAsync(page);
+    }
+
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync("");
+    }
+
+    private async Task ApplyFilterAsync(string filter)
+    {
+        Filter = filter;
+        int page = 1;
+        await SelectedPage(page);
+    }
+    #endregion
+}

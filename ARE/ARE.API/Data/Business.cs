@@ -33,6 +33,12 @@ namespace ARE.API.Data
                         LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
                     });
                     break;
+                case "DEPARTMENTS":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Departamento --" });
+                    _context.Departments.ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
                 case "GENDER":
                     LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Genero --" });
                     LstResult.Add(new ItemCombo() { Value = "M", Text = " M " });
@@ -47,6 +53,12 @@ namespace ARE.API.Data
                 case "SCHOOLGRADES":
                     LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Grado --" });
                     _context.SchoolGrades.ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
+                case "STUDENTS":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Alumno --" });
+                    _context.Students.ToList().ForEach(x => {
                         LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
                     });
                     break;

@@ -14,6 +14,11 @@ namespace ARE.Shared.Entities
         public string Name { get; set; } = null!;
 
 
+        public ICollection<SubTypeOfCharge>? SubTypeOfCharges { get; set; }
+
+        [Display(Name = "Sub Tipos de cobros")]
+        public int SubTypeOfChargesNumber => SubTypeOfCharges == null ? 0 : SubTypeOfCharges.Count;
+
     }
 }
 

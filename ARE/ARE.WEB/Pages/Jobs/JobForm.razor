@@ -1,0 +1,72 @@
+﻿@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+
+<div class="row align-items-center">
+    <div class="col-6">
+        <div class="mb-3">
+            <label>Departamento:</label>
+            <div>
+                <select class="form-select" @bind="Model.DepartmentId">
+                    @if (departments is not null)
+                    {
+                        @foreach (var item in departments)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row align-items-center">
+    <div class="col-6">
+        <div class="mb-3">
+            <label>Nombre:</label>
+            <div>
+                <InputText class="form-control" @bind-Value="@Model.Name" />
+                <ValidationMessage For="@(() => Model.Name)" />
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Job Model { get; set; } = new Job();
+
+    private List<ItemCombo>? departments;
+    //private string DepartmentSelected;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        //DepartmentSelected = Model.Id > 0 ? Model.DepartmentId.ToString() : "0";
+
+        await InitCombos();
+    }
+
+    private async Task InitCombos()
+    {
+        await LoadDepartmentsAsync();
+    }
+
+    private async Task LoadDepartmentsAsync()
+    {
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=Departments");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        departments = responseHttp.Response;
+    }
+}

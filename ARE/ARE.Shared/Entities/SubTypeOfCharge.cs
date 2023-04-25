@@ -16,7 +16,7 @@ namespace ARE.Shared.Entities
 
         [Display(Name = "Precio")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Price { get; set; } = null!;
+        public decimal Price { get; set; }
 
 
         #region Related Entities
