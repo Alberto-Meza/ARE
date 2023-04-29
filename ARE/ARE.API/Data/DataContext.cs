@@ -25,8 +25,9 @@ namespace ARE.API.Data
         public DbSet<EmployeeType> EmployeeTypes { get; set; }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<MethodOfPayment> MethodOfPayments { get; set; }
+        public DbSet<Payment> payments { get; set; }
         public DbSet<PaymentPeriod> PaymentPeriods { get; set; }
-        public DbSet<PendingCharges> PendingCharges { get; set; }
+        public DbSet<PendingAssistance> PendingAssistances { get; set; }
         public DbSet<SchoolGrade> SchoolGrades { get; set; }
         public DbSet<Shift> Shifts { get; set; }
         public DbSet<State> States { get; set; }
@@ -54,6 +55,7 @@ namespace ARE.API.Data
             modelBuilder.Entity<EmployeeType>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<Job>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<MethodOfPayment>().HasIndex(m => m.Name).IsUnique();
+            modelBuilder.Entity<Payment>().HasIndex("StudentId","PaymentDate", "MethodOfPaymentId","ChargeId").IsUnique();
             modelBuilder.Entity<PaymentPeriod>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<SchoolGrade>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<Shift>().HasIndex(e => e.Name).IsUnique();
@@ -63,6 +65,7 @@ namespace ARE.API.Data
             modelBuilder.Entity<StudentTypeRelationship>().HasIndex(e => e.StudentId).IsUnique();
             modelBuilder.Entity<TableDescription>().HasIndex(e => e.Name).IsUnique();
             modelBuilder.Entity<TypeOfCharge>().HasIndex(e => e.Name).IsUnique();
+
 
             /*modelBuilder.Entity<Country>().Navigation(c => c.States).AutoInclude();
             modelBuilder.Entity<State>().Navigation(c => c.Cities).AutoInclude();*/

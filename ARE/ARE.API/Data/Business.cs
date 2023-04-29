@@ -2,6 +2,8 @@
 using ARE.Shared.DTOs;
 using ARE.API.Helpers;
 using ARE.Shared.Entities;
+using Microsoft.EntityFrameworkCore;
+using ARE.Shared.Enums;
 
 namespace ARE.API.Data
 {
@@ -14,7 +16,10 @@ namespace ARE.API.Data
             _context = context;
         }
 
-		internal List<ItemCombo> GetCombo(string name)
+
+        #region Combos
+
+        internal List<ItemCombo> GetCombo(string name)
 		{
 			List<ItemCombo> LstResult = new List<ItemCombo>();
 
@@ -68,6 +73,12 @@ namespace ARE.API.Data
                         LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
                     });
                     break;
+                case "TYPEOFCHARGES":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Tipo Cobro --" });
+                    _context.TypeOfCharges.ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
                 default:
 					break;
 			}
@@ -83,18 +94,25 @@ namespace ARE.API.Data
 
             switch (name.ToUpper())
             {
-                case "STATE":
-                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Estado --" });
-                    _context.States.AsQueryable().WhereCondition(Filters,new State()).ToList().ForEach(x => {
-                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
-                    });
-                    break;
                 case "CITY":
                     LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Ciudad --" });
                     _context.Cities.AsQueryable().WhereCondition(Filters, new City()).ToList().ForEach(x => {
                         LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
                     });
                     break;
+                case "SUBTYPEOFCHARGES":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Sub Tipo --" });
+                    _context.SubTypeOfCharges.AsQueryable().WhereCondition(Filters, new State()).ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name, Value2 = x.Price.ToString() });
+                    });
+                    break;
+                case "STATE":
+                    LstResult.Add(new ItemCombo() { Value = "0", Text = "-- Selecciona Estado --" });
+                    _context.States.AsQueryable().WhereCondition(Filters,new State()).ToList().ForEach(x => {
+                        LstResult.Add(new ItemCombo() { Value = x.Id.ToString(), Text = x.Name });
+                    });
+                    break;
+               
                 default:
                     break;
             }
@@ -102,9 +120,44 @@ namespace ARE.API.Data
 
             return LstResult;
         }
+        #endregion
 
 
-       
+        #region Asistencias
+        internal async Task<Assistance> CheckAlumno(Assistance model)
+        {
+            var entity = _context.Assistances.FirstOrDefaultAsync(x => x.StudentId == model.StudentId && x.EntryDate!.Value.Date == model.EntryDate!.Value.Date);
+
+            if (entity.Result == null)//CHECADA ENTRADA
+            { 
+
+                var DateCharge =  _context.ChargeDates.Where(x => model.EntryDate!.Value.Date >= x.StartDate && model.EntryDate.Value.Date <= x.EndDate
+                                            && x.ChargeDetail.Charge.StudentId == model.StudentId).FirstOrDefault();
+
+
+
+                Assistance Check = new Assistance() { StudentId = model.StudentId
+                                         , EntryDate = model.EntryDate
+                                         , Status = (DateCharge == null ? AssistsStatusType.Inicial : AssistsStatusType.Pagado)
+                                         , ChargeId = (DateCharge == null ? null: DateCharge.ChargeDetailId)
+                };
+
+                _context.Add(Check);
+            }
+            else if (entity.Result != null && model.EntryDate > entity.Result.EntryDate!.Value.AddMinutes(30)) //CHECADA SALIDA
+            { 
+                entity.Result.ExitDate = model.EntryDate;
+                _context.Update(entity.Result);
+            }
+
+
+            await _context.SaveChangesAsync();
+
+            return entity.Result;
+        }
+        #endregion
+
+
 
     }
 }

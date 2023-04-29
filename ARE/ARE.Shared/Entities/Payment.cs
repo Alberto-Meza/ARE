@@ -6,11 +6,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ARE.Shared.Entities
 {
-	public class ChargeDetail:IEntity
-	{
+	public class Payment : IEntity
+    {
         public int Id { get; set; }
+        public int StudentId { get; set; }
+        public int MethodOfPaymentId { get; set; }
         public int ChargeId { get; set; }
-        public int SubTypeOfChargeId { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
@@ -18,21 +19,14 @@ namespace ARE.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public decimal Amount { get; set; }
 
-        [Display(Name = "Fecha de Pago")]
+        [Display(Name = "Fecha")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public decimal PaymentDate { get; set; }
-
-        [Display(Name = "Comentario")]
-        [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Comment { get; set; } = null!;
-
+        public DateTime PaymentDate { get; set; }
 
         #region Related Entities
-
+        public Student? Student { get; set; }
+        public MethodOfPayment? MethodOfPayment { get; set; }
         public Charge? Charge { get; set; }
-        public SubTypeOfCharge? SubTypeOfCharge { get; set; }
-
         #endregion
 
     }

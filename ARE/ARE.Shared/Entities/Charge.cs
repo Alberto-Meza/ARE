@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 using ARE.Shared.Enums;
 
@@ -9,12 +10,13 @@ namespace ARE.Shared.Entities
 	{
         public int Id { get; set; }
         public int StudentId { get; set; }
-        public int SubTypeOfChargeId { get; set; }
 
         [Display(Name = "Fecha de Cobro")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public DateTime ChargeDate { get; set; }
 
+        [Column(TypeName = "decimal(18,2)")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
         [Display(Name = "Total")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public decimal Total { get; set; }
@@ -31,7 +33,7 @@ namespace ARE.Shared.Entities
 
         public Student? Student { get; set; }
 
-        public SubTypeOfCharge? SubTypeOfCharge { get; set; }
+        
         #endregion
     }
 }

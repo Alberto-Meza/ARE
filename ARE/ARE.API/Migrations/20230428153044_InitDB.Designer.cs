@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ARE.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230324223334_M008")]
-    partial class M008
+    [Migration("20230428153044_InitDB")]
+    partial class InitDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,16 +33,24 @@ namespace ARE.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ChargeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ExitDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChargeId");
 
                     b.HasIndex("StudentId");
 
@@ -149,10 +157,10 @@ namespace ARE.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("StudentId")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubTypeOfChargeId")
+                    b.Property<int>("StudentId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Total")
@@ -161,8 +169,6 @@ namespace ARE.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
-
-                    b.HasIndex("SubTypeOfChargeId");
 
                     b.ToTable("Charges");
                 });
@@ -175,21 +181,18 @@ namespace ARE.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChargeId")
+                    b.Property<int>("ChargeDetailId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsPending")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChargeId");
+                    b.HasIndex("ChargeDetailId");
 
                     b.ToTable("ChargeDates");
                 });
@@ -213,17 +216,17 @@ namespace ARE.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("MethodOfPaymentId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("PaymentDate")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SubTypeOfChargeId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChargeId");
 
-                    b.HasIndex("MethodOfPaymentId");
+                    b.HasIndex("SubTypeOfChargeId");
 
                     b.ToTable("ChargeDetails");
                 });
@@ -500,6 +503,41 @@ namespace ARE.API.Migrations
                     b.ToTable("MethodOfPayments");
                 });
 
+            modelBuilder.Entity("ARE.Shared.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ChargeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MethodOfPaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChargeId");
+
+                    b.HasIndex("MethodOfPaymentId");
+
+                    b.HasIndex("StudentId", "PaymentDate", "MethodOfPaymentId", "ChargeId")
+                        .IsUnique();
+
+                    b.ToTable("payments");
+                });
+
             modelBuilder.Entity("ARE.Shared.Entities.PaymentPeriod", b =>
                 {
                     b.Property<int>("Id")
@@ -521,7 +559,7 @@ namespace ARE.API.Migrations
                     b.ToTable("PaymentPeriods");
                 });
 
-            modelBuilder.Entity("ARE.Shared.Entities.PendingCharges", b =>
+            modelBuilder.Entity("ARE.Shared.Entities.PendingAssistance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -532,11 +570,24 @@ namespace ARE.API.Migrations
                     b.Property<int>("AssistanceId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SubTypeOfChargeId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssistanceId");
 
-                    b.ToTable("PendingCharges");
+                    b.HasIndex("SubTypeOfChargeId");
+
+                    b.ToTable("PendingAssistances");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.SchoolGrade", b =>
@@ -625,13 +676,6 @@ namespace ARE.API.Migrations
 
                     b.Property<DateTime?>("BirthDate")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("BirthDateTutor1")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("BirthDateTutor2")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("BirthPlace")
@@ -641,14 +685,6 @@ namespace ARE.API.Migrations
 
                     b.Property<int?>("BloodTypeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("CelNumberTutor1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CelNumberTutor2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CityId")
                         .HasColumnType("int");
@@ -665,11 +701,9 @@ namespace ARE.API.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<byte[]>("Fingerprint1")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<byte[]>("Fingerprint2")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<DateTime?>("FirstDateAppointment")
@@ -677,7 +711,6 @@ namespace ARE.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Folio")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
@@ -708,16 +741,6 @@ namespace ARE.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("NameTutor1")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("NameTutor2")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.Property<int?>("Number")
                         .HasColumnType("int");
 
@@ -726,29 +749,12 @@ namespace ARE.API.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("OccupationTutor1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OccupationTutor2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("OtherConditions")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("PhotoPath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RelationshipTutor1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RelationshipTutor2")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SchoolGradeId")
@@ -846,9 +852,8 @@ namespace ARE.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Price")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("TypeOfChargeId")
                         .HasColumnType("int");
@@ -981,6 +986,9 @@ namespace ARE.API.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("UserType")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1130,11 +1138,17 @@ namespace ARE.API.Migrations
 
             modelBuilder.Entity("ARE.Shared.Entities.Assistance", b =>
                 {
+                    b.HasOne("ARE.Shared.Entities.Charge", "Charge")
+                        .WithMany()
+                        .HasForeignKey("ChargeId");
+
                     b.HasOne("ARE.Shared.Entities.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Charge");
 
                     b.Navigation("Student");
                 });
@@ -1158,26 +1172,18 @@ namespace ARE.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ARE.Shared.Entities.SubTypeOfCharge", "SubTypeOfCharge")
-                        .WithMany()
-                        .HasForeignKey("SubTypeOfChargeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Student");
-
-                    b.Navigation("SubTypeOfCharge");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.ChargeDates", b =>
                 {
-                    b.HasOne("ARE.Shared.Entities.Charge", "Charge")
+                    b.HasOne("ARE.Shared.Entities.ChargeDetail", "ChargeDetail")
                         .WithMany()
-                        .HasForeignKey("ChargeId")
+                        .HasForeignKey("ChargeDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Charge");
+                    b.Navigation("ChargeDetail");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.ChargeDetail", b =>
@@ -1188,15 +1194,15 @@ namespace ARE.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ARE.Shared.Entities.MethodOfPayment", "MethodOfPayment")
+                    b.HasOne("ARE.Shared.Entities.SubTypeOfCharge", "SubTypeOfCharge")
                         .WithMany()
-                        .HasForeignKey("MethodOfPaymentId")
+                        .HasForeignKey("SubTypeOfChargeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Charge");
 
-                    b.Navigation("MethodOfPayment");
+                    b.Navigation("SubTypeOfCharge");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.City", b =>
@@ -1264,7 +1270,34 @@ namespace ARE.API.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("ARE.Shared.Entities.PendingCharges", b =>
+            modelBuilder.Entity("ARE.Shared.Entities.Payment", b =>
+                {
+                    b.HasOne("ARE.Shared.Entities.Charge", "Charge")
+                        .WithMany()
+                        .HasForeignKey("ChargeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ARE.Shared.Entities.MethodOfPayment", "MethodOfPayment")
+                        .WithMany()
+                        .HasForeignKey("MethodOfPaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ARE.Shared.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Charge");
+
+                    b.Navigation("MethodOfPayment");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("ARE.Shared.Entities.PendingAssistance", b =>
                 {
                     b.HasOne("ARE.Shared.Entities.Assistance", "Assistance")
                         .WithMany()
@@ -1272,7 +1305,15 @@ namespace ARE.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ARE.Shared.Entities.SubTypeOfCharge", "SubTypeOfCharge")
+                        .WithMany()
+                        .HasForeignKey("SubTypeOfChargeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Assistance");
+
+                    b.Navigation("SubTypeOfCharge");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.State", b =>
@@ -1316,7 +1357,7 @@ namespace ARE.API.Migrations
             modelBuilder.Entity("ARE.Shared.Entities.StudentTypeRelationship", b =>
                 {
                     b.HasOne("ARE.Shared.Entities.Student", "Student")
-                        .WithMany()
+                        .WithMany("StudentTypeRelationships")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1335,7 +1376,7 @@ namespace ARE.API.Migrations
             modelBuilder.Entity("ARE.Shared.Entities.SubTypeOfCharge", b =>
                 {
                     b.HasOne("ARE.Shared.Entities.TypeOfCharge", "TypeOfCharge")
-                        .WithMany()
+                        .WithMany("SubTypeOfCharges")
                         .HasForeignKey("TypeOfChargeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1402,6 +1443,16 @@ namespace ARE.API.Migrations
             modelBuilder.Entity("ARE.Shared.Entities.State", b =>
                 {
                     b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("ARE.Shared.Entities.Student", b =>
+                {
+                    b.Navigation("StudentTypeRelationships");
+                });
+
+            modelBuilder.Entity("ARE.Shared.Entities.TypeOfCharge", b =>
+                {
+                    b.Navigation("SubTypeOfCharges");
                 });
 #pragma warning restore 612, 618
         }

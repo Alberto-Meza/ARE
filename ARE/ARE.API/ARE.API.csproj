@@ -27,11 +27,13 @@
     <None Remove="Data\" />
     <None Remove="Controllers\" />
     <None Remove="Helpers\" />
+    <None Remove="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Controllers\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARE.Shared\ARE.Shared.csproj">

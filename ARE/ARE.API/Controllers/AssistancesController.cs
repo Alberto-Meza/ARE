@@ -21,16 +21,20 @@ namespace ARE.API.Controllers
 
 
         [HttpPost("Check")]
-        public virtual async Task<ActionResult> GetAllAsync([FromBody] Assistance model)
+        public ActionResult Check([FromBody] Assistance model)
         {
-            var entity = _context.Assistances.FirstOrDefaultAsync(x => x.StudentId == model.StudentId && x.EntryDate.Value.Date == model.EntryDate.Value.Date);
+            /*var entity = _context.Assistances.FirstOrDefaultAsync(x => x.StudentId == model.StudentId && x.EntryDate.Value.Date == model.EntryDate.Value.Date);
 
-            if (entity.Result == null) {
+            if (entity.Result == null) { //CHECADA ENTRADA
+
+
+
+
                 Assistance Check = new Assistance() { StudentId = model.StudentId, EntryDate = model.EntryDate };
                 _context.Add(Check);
             }
             else if (entity.Result != null && model.EntryDate > entity.Result.EntryDate.Value.AddMinutes(30))
-            {
+            { //CHECADA SALIDA
                 entity.Result.ExitDate = model.EntryDate;
                 _context.Update(entity.Result);
             }
@@ -38,6 +42,8 @@ namespace ARE.API.Controllers
 
             await _context.SaveChangesAsync();
             return Ok(entity.Result);
+            */
+            return Ok(new Business(_context).CheckAlumno(model));
 
         }
 

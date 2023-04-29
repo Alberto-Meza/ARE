@@ -7,7 +7,7 @@ namespace ARE.Shared.Entities
 	public class ChargeDates:IEntity
 	{
         public int Id { get; set; }
-        public int ChargeId { get; set; }
+        public int ChargeDetailId { get; set; }
 
         [Display(Name = "Fecha Inicio")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -20,7 +20,7 @@ namespace ARE.Shared.Entities
 
         #region Related Entities
 
-        public Charge? Charge { get; set; }
+        public ChargeDetail? ChargeDetail { get; set; }
 
         #endregion
 

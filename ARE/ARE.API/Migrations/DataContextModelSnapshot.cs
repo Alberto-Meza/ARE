@@ -160,17 +160,12 @@ namespace ARE.API.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubTypeOfChargeId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
-
-                    b.HasIndex("SubTypeOfChargeId");
 
                     b.ToTable("Charges");
                 });
@@ -183,7 +178,7 @@ namespace ARE.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChargeId")
+                    b.Property<int>("ChargeDetailId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
@@ -194,7 +189,7 @@ namespace ARE.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChargeId");
+                    b.HasIndex("ChargeDetailId");
 
                     b.ToTable("ChargeDates");
                 });
@@ -218,17 +213,17 @@ namespace ARE.API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("MethodOfPaymentId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("PaymentDate")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SubTypeOfChargeId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChargeId");
 
-                    b.HasIndex("MethodOfPaymentId");
+                    b.HasIndex("SubTypeOfChargeId");
 
                     b.ToTable("ChargeDetails");
                 });
@@ -505,6 +500,41 @@ namespace ARE.API.Migrations
                     b.ToTable("MethodOfPayments");
                 });
 
+            modelBuilder.Entity("ARE.Shared.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ChargeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MethodOfPaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChargeId");
+
+                    b.HasIndex("MethodOfPaymentId");
+
+                    b.HasIndex("StudentId", "PaymentDate", "MethodOfPaymentId", "ChargeId")
+                        .IsUnique();
+
+                    b.ToTable("payments");
+                });
+
             modelBuilder.Entity("ARE.Shared.Entities.PaymentPeriod", b =>
                 {
                     b.Property<int>("Id")
@@ -526,7 +556,7 @@ namespace ARE.API.Migrations
                     b.ToTable("PaymentPeriods");
                 });
 
-            modelBuilder.Entity("ARE.Shared.Entities.PendingCharges", b =>
+            modelBuilder.Entity("ARE.Shared.Entities.PendingAssistance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -554,7 +584,7 @@ namespace ARE.API.Migrations
 
                     b.HasIndex("SubTypeOfChargeId");
 
-                    b.ToTable("PendingCharges");
+                    b.ToTable("PendingAssistances");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.SchoolGrade", b =>
@@ -1139,26 +1169,18 @@ namespace ARE.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ARE.Shared.Entities.SubTypeOfCharge", "SubTypeOfCharge")
-                        .WithMany()
-                        .HasForeignKey("SubTypeOfChargeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Student");
-
-                    b.Navigation("SubTypeOfCharge");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.ChargeDates", b =>
                 {
-                    b.HasOne("ARE.Shared.Entities.Charge", "Charge")
+                    b.HasOne("ARE.Shared.Entities.ChargeDetail", "ChargeDetail")
                         .WithMany()
-                        .HasForeignKey("ChargeId")
+                        .HasForeignKey("ChargeDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Charge");
+                    b.Navigation("ChargeDetail");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.ChargeDetail", b =>
@@ -1169,15 +1191,15 @@ namespace ARE.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ARE.Shared.Entities.MethodOfPayment", "MethodOfPayment")
+                    b.HasOne("ARE.Shared.Entities.SubTypeOfCharge", "SubTypeOfCharge")
                         .WithMany()
-                        .HasForeignKey("MethodOfPaymentId")
+                        .HasForeignKey("SubTypeOfChargeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Charge");
 
-                    b.Navigation("MethodOfPayment");
+                    b.Navigation("SubTypeOfCharge");
                 });
 
             modelBuilder.Entity("ARE.Shared.Entities.City", b =>
@@ -1245,7 +1267,34 @@ namespace ARE.API.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("ARE.Shared.Entities.PendingCharges", b =>
+            modelBuilder.Entity("ARE.Shared.Entities.Payment", b =>
+                {
+                    b.HasOne("ARE.Shared.Entities.Charge", "Charge")
+                        .WithMany()
+                        .HasForeignKey("ChargeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ARE.Shared.Entities.MethodOfPayment", "MethodOfPayment")
+                        .WithMany()
+                        .HasForeignKey("MethodOfPaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ARE.Shared.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Charge");
+
+                    b.Navigation("MethodOfPayment");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("ARE.Shared.Entities.PendingAssistance", b =>
                 {
                     b.HasOne("ARE.Shared.Entities.Assistance", "Assistance")
                         .WithMany()
