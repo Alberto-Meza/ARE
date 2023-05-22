@@ -19,8 +19,9 @@ namespace ARE.Shared.Entities
         public decimal Amount { get; set; }
 
         [Display(Name = "Fecha de Pago")]
+        [Column(TypeName = "datetime")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public decimal PaymentDate { get; set; }
+        public DateTime PaymentDate { get; set; }
 
         [Display(Name = "Comentario")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]

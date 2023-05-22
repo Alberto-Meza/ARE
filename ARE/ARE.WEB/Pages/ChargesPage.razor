@@ -1,0 +1,182 @@
+﻿@page "/charges"
+@inject IRepository repository
+@inject SweetAlertService Alert
+@inject NavigationManager navigationManager
+@inject IJSRuntime JS
+
+
+<div class="card">
+    
+    <div class="card-body">
+
+        <span>
+
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Alumno:</label>
+                        <div>
+                            <select class="form-select" @onchange="OnChangeStudent">
+                                @if (students is not null)
+                                {
+                                    @foreach (var item in students)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <button class="btn btn-warning" @onclick="Check"> <i class="oi oi-pencil" /> Checar </button>
+                    </div>
+                </div>
+            </div>
+
+        </span>
+
+    </div>
+ 
+</div>
+
+<br />
+
+<div class="card">
+    
+    <div class="card-body">
+
+        <div class="row col-12">
+            <!-- #region Izuierda -->
+            <div class="col-6">
+                test
+            </div>
+
+    <!-- #region Derecha -->
+            <div class="col-6">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in PendingAssistances!)
+                        {
+                            <tr>
+                                <td>
+                                    <InputCheckbox class="form-check-input" @bind-Value="@item.IsSelected" />
+                                </td>
+                                <td>
+                                    @item.Assistance.EntryDate!.Value.Date
+                                </td>
+                                <td>
+                                    @item.SubTypeOfCharge.Name
+                                </td>
+                                <td>
+                                    @item.SubTypeOfCharge.Price
+                                </td>
+                                
+                            </tr>
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+   
+</div>
+
+<br />
+
+
+<div class="card">
+    <div class="card-header">
+        <span>
+
+        </span>
+    </div>
+    <div class="card-body">
+
+
+
+    </div>
+    <div class="card-footer">
+    </div>
+</div>
+
+
+@code {
+    public string ApiBase = "api/assistances";
+    private List<ItemCombo>? students;
+    private int StudentID = 0;
+    private List<PendingAssistanceDTO>? PendingAssistances { get; set; } = new List<PendingAssistanceDTO>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitCombos();
+    }
+
+    private async Task InitCombos()
+    {
+        await LoadStudentsAsync();
+    }
+
+    private async Task LoadStudentsAsync()
+    {
+        var responseHttp = await repository.Get<List<ItemCombo>>("/api/utils/GetCombo?name=Students");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        students = responseHttp.Response;
+    }
+
+    private async Task OnChangeStudent(ChangeEventArgs e)
+    {
+        var StudentIDSelected = int.Parse((string)e.Value!);
+        await LoadInfo(StudentIDSelected);
+    }
+
+    private async Task LoadInfo(int StudentID)
+    {
+        var responseHttp = await repository.Get<List<PendingAssistance>>($"/api/pendingAssistances/GetPendingAssitances?StudentID={StudentID}");
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+
+        PendingAssistances = responseHttp.Response.CopyTo(new PendingAssistanceDTO());
+
+        JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+    }
+
+    private async Task Check()
+    {
+        /*Assistance Asis = new Assistance() { StudentId = StudentID, EntryDate = DateTime.Now };
+        var httpResponse = await repository.Post($"/{ApiBase}/Check", Asis);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await Alert.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        */
+        var tegdgfh = PendingAssistances;
+        JS.ShowToast("Se guardo correctamente", TypeAlert.success, AlertPosition.center_end, false, 2000);
+    }
+}
+

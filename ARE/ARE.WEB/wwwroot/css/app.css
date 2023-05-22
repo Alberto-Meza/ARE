@@ -2,6 +2,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    
 }
 
 h1:focus {
@@ -128,7 +129,7 @@ a, .btn-link {
     flex-direction: column;
     justify-content: space-between;
     border: 1px solid lightgray;
-    box-shadow: 2px 2px 8px 4px #d3d3d3d1;
+    box-shadow: 2px 2px 8px 4px #E3E7E3;
     border-radius: 15px;
     font-family: sans-serif;
     margin: 5px;

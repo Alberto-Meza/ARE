@@ -72,13 +72,74 @@ namespace ARE.API.Controllers
             }*/
 
             //TODO: REVISAR LOGICA PARA AGREGAR O MODIFICAR FOTO
-            if (!string.IsNullOrEmpty(entity.PhotoPath))
+            /*if (!string.IsNullOrEmpty(entity.PhotoPath))
             {
                 var photoStudent = Convert.FromBase64String(entity.PhotoPath);
                 entity.PhotoPath = !string.IsNullOrEmpty(entity.PhotoPath) ? await _fileStorage.EditFileAsync(photoStudent, ".jpg", _container, entity.PhotoPath) : await _fileStorage.SaveFileAsync(photoStudent, ".jpg", _container);
             }
+            else
+            {
+                entity.PhotoPath = _context.Students.FirstOrDefault(x => x.Id == entity.Id).PhotoPath;
+
+            }
 
             return await base.PutAsync(entity);
+            */
+
+
+            
+            try
+            {
+                var currentStudent = await _context.Students.FirstOrDefaultAsync(x => x.Id == entity.Id);
+                
+                if (currentStudent == null)
+                {
+                    return NotFound();
+                }
+
+                if (!string.IsNullOrEmpty(entity.PhotoPath))
+                {
+                    var photoUser = Convert.FromBase64String(entity.PhotoPath);
+                    entity.PhotoPath = !string.IsNullOrEmpty(currentStudent.PhotoPath) ? await _fileStorage.EditFileAsync(photoUser, ".jpg", _container, currentStudent.PhotoPath) : await _fileStorage.SaveFileAsync(photoUser, ".jpg", _container);
+                }
+
+                currentStudent.Name = entity.Name;
+                currentStudent.LastName1 = entity.LastName1;
+                currentStudent.LastName2 = entity.LastName2;
+                currentStudent.Gender = entity.Gender;
+                currentStudent.BirthDate = entity.BirthDate;
+                currentStudent.BirthPlace = entity.BirthPlace;
+                currentStudent.Asthma = entity.Asthma;
+                currentStudent.Convulsions = entity.Convulsions;
+                currentStudent.OtherConditions = entity.OtherConditions;
+                currentStudent.Allergies = entity.Allergies;
+                currentStudent.Diseases = entity.Diseases;
+                currentStudent.Medicines = entity.Medicines;
+                currentStudent.Observation = entity.Observation;
+                currentStudent.FirstDateAppointment = entity.FirstDateAppointment;
+                currentStudent.Folio = entity.Folio;
+                currentStudent.Fingerprint1 = entity.Fingerprint1;
+                currentStudent.Fingerprint2 = entity.Fingerprint2;
+                currentStudent.IsActive = entity.IsActive;
+                currentStudent.Street = entity.Street;
+                currentStudent.Number = entity.Number;
+                currentStudent.Suburb = entity.Suburb;
+                currentStudent.ZipCode = entity.ZipCode;
+                currentStudent.BloodTypeId = entity.BloodTypeId;
+                currentStudent.CivilStatusId = entity.CivilStatusId;
+                currentStudent.SchoolGradeId = entity.SchoolGradeId;
+                currentStudent.CityId = entity.CityId;
+                currentStudent.PhotoPath = !string.IsNullOrEmpty(entity.PhotoPath) && entity.PhotoPath != currentStudent.PhotoPath ? entity.PhotoPath : currentStudent.PhotoPath;
+
+
+                return Ok(await base.PutAsync(currentStudent));
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpGet("GetAll")]

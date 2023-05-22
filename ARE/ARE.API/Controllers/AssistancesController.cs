@@ -21,7 +21,7 @@ namespace ARE.API.Controllers
 
 
         [HttpPost("Check")]
-        public ActionResult Check([FromBody] Assistance model)
+        public async Task<ActionResult> Check([FromBody] Assistance model)
         {
             /*var entity = _context.Assistances.FirstOrDefaultAsync(x => x.StudentId == model.StudentId && x.EntryDate.Value.Date == model.EntryDate.Value.Date);
 
@@ -43,7 +43,7 @@ namespace ARE.API.Controllers
             await _context.SaveChangesAsync();
             return Ok(entity.Result);
             */
-            return Ok(new Business(_context).CheckAlumno(model));
+            return Ok(await new Business(_context).CheckAlumno(model));
 
         }
 

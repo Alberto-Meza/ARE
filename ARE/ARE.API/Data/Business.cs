@@ -131,7 +131,8 @@ namespace ARE.API.Data
             if (entity.Result == null)//CHECADA ENTRADA
             { 
 
-                var DateCharge =  _context.ChargeDates.Where(x => model.EntryDate!.Value.Date >= x.StartDate && model.EntryDate.Value.Date <= x.EndDate
+                var DateCharge =  _context.ChargeDates.Where(x => model.EntryDate!.Value.Date >= x.StartDate.Date
+                                            && model.EntryDate.Value.Date <= x.EndDate.Date
                                             && x.ChargeDetail.Charge.StudentId == model.StudentId).FirstOrDefault();
 
 
