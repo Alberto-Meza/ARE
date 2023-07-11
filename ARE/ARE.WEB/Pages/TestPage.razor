@@ -3,98 +3,93 @@
 @inject SweetAlertService sweetAlertService
 @inject NavigationManager navigationManager
 @inject ILoginService loginService
-@layout EmptyLayout
 
-
-<style>
-
-    body {
-        background: none !important;
-        background-image: url("./Images/ARE_Patrón-01.png") !important
-    }
-
-    .linear-gradient {
-        background: linear-gradient(#8E04FA, #D099FB, #FFFFFF 90%);
-    }
-
-    .card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border: 1px solid lightgray;
-        box-shadow: 2px 2px 8px 4px #d3d3d3d1;
-        border-radius: 15px;
-        font-family: sans-serif;
-        margin: 5px;
-    }
-
-</style>
-
-
-<div class="row">
-    <div class="col-md-4  offset-md-4">
-        <MudBlazor.MudPaper Height="500px" Width="450px" Class="d-flex align-center justify-center ma-4 linear-gradient" Elevation="10">
-            <div class="row" style="height:40%; background-color:red"></div>
-
-            <div class="row card" style="width:70%; height: 50%; background-color: white">
-                <div class="col">
-                    <div class="card bg-light">
-                        <div class="card-header justify-content-center">
-                            <span>
-                                <i class="oi oi-account-login" /> Iniciar Sesión
-                                <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Iniciar Sesión</button>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label>Email:</label>
-                                <div>
-                                    <InputText class="form-control" @bind-Value="@loginDTO.Email" />
-                                    <ValidationMessage For="@(() => loginDTO.Email)" />
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label>Contraseña:</label>
-                                <div>
-                                    <InputText type="password" class="form-control" @bind-Value="@loginDTO.Password" />
-                                    <ValidationMessage For="@(() => loginDTO.Password)" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <a class="bbtn btn-link" href="/ResendToken">Reenviar correro de activación de cuenta</a>
-                            <p><a class="bbtn btn-link" href="/RecoverPassword">¿Has olvidado tu contraseña?</a></p>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-            
-            <div class="row" style="height:10%; background-color:pink"></div>
-        </MudBlazor.MudPaper>
-
-    </div>
+<div>
+    <button class="btn btn-sucess" onclick="@(() => lstPages.Add("Departments.DepartmentIndex") )">Departamentos</button>
+    <button class="btn btn-sucess" onclick="@(() => lstPages.Add("MethodOfPayments.MethodOfPaymentIndex") )">Metodo pago </button>
+    <button class="btn btn-sucess" onclick="@(() => lstPages.Add("test") )">Add pestaña </button>
 </div>
+
+<div>
+
+</div>
+
+<TabControl>
+
+
+    @foreach (var item in lstPages!)
+    {
+        <TabPage Text="@item">
+            <h1>The tab numero @item</h1>
+            <DynamicComponent Type="@GetMenu(item)" />
+        </TabPage>
+    }
+
+    
+
+   
+
+</TabControl>
+
 
 
 @code {
-    public string Search { get; set; }
-
-    private LoginDTO loginDTO = new();
-
-    private async Task LoginAsync()
+    /*
+     @for (var i = 0; i < lstPages.Count; i++)
     {
-        var responseHttp = await repository.Post<LoginDTO, TokenDTO>("/api/accounts/Login", loginDTO);
-        if (responseHttp.Error)
-        {
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
-        }
+        var Texto = $"Tab{lstPages[i]}";
+        <TabPage Text="@Texto">
+            <h1>The tab numero @Texto</h1>
+            <DynamicComponent Type="@GetMenu(i)" />
+        </TabPage>
+    }*/
 
-        await loginService.LoginAsync(responseHttp.Response!.Token);
-        navigationManager.NavigateTo("/");
+    List<string> lstPages = new List<string>() { "Departments.DepartmentIndex" };
+    private TabControl tabControl = new TabControl();
+
+    protected override void OnInitialized()
+    {
+        /*
+        RenderFragment renderFragment = renderFragmentBul =>
+        {
+            renderFragmentBul.OpenComponent(0, new TypeOfCharges.TypeOfChargeIndex().GetType());
+            renderFragmentBul.CloseComponent();
+        };
+
+        RenderFragment renderFragment2 = renderFragmentBul =>
+        {
+            renderFragmentBul.OpenComponent(0, new TypeOfCharges.TypeOfChargeIndex().GetType());
+        };
+
+        lstPages.Add(new TabPage() { Text = $"Tab1", ChildContent= renderFragment });
+        lstPages.Add(new TabPage() { Text = $"Tab2", ChildContent= renderFragment2 });
+
+
+
+        tabControl.AddPage(new TabPage() { Text = "Tab1", ChildContent = renderFragment });
+        StateHasChanged();
+        */
+        //base.OnInitialized();
     }
+
+    private Type GetMenu(string page)
+    {
+        Type type = Type.GetType($"ARE.WEB.Pages.{page}");
+        return Type.GetType($"ARE.WEB.Pages.{page}");
+    }
+
+    /*
+<TabControl @ref="tabControl" >j
+
+
+     <TabPage Text="Tab 1">
+        <h1>The first tab</h1>
+    </TabPage>
+    <TabPage Text="Tab 2">
+        <h1>The second tab</h1>
+    </TabPage>
+    <TabPage Text="Tab 3">
+        <h1>The third tab</h1>
+    </TabPage>
+        */
 }

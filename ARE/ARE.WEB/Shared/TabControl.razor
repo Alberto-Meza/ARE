@@ -1,0 +1,58 @@
+﻿
+<CascadingValue Value="this">
+    <div class="btn-group" role="group">
+
+        @foreach (TabPage tabPage in Pages)
+        {
+                <div>
+                    <button type="button"
+                            class="btn @GetButtonClass(tabPage)"
+                            @onclick=@( () => ActivatePage(tabPage) )>
+                        @tabPage.Text
+                    </button>
+                    <button type="button"
+                            class="btn @GetButtonClass(tabPage)"
+                            @onclick=@( () => ClosePage(tabPage) )>
+                        X
+                    </button>
+                </div>
+           
+        }
+
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    // Next line is needed so we are able to add <TabPage> components inside
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public TabPage ActivePage { get; set; }
+    List<TabPage> Pages = new List<TabPage>();
+
+    internal void AddPage(TabPage tabPage)
+    {
+        Pages.Add(tabPage);
+        if (Pages.Count == 1)
+            ActivePage = tabPage;
+        StateHasChanged();
+    }
+
+    string GetButtonClass(TabPage page)
+    {
+        return page == ActivePage ? "btn-primary" : "btn-secondary";
+    }
+
+    void ActivatePage(TabPage page)
+    {
+        ActivePage = page;
+    }
+    void ClosePage(TabPage page)
+    {
+        Pages.Remove(page);
+        ActivePage = Pages.Count() > 0 ? Pages.FirstOrDefault() : null;
+        StateHasChanged();
+
+    }
+}
